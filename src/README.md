@@ -5,12 +5,20 @@ This is a utility designed to break down, analyze, manipulate, and build harmoni
 Colors are organized as a set of swatches (e.g. "red", "yellow"), composed of tones (e.g. 100, 200). This collection together are referred to as a "project". Colors are internally represented as LCH.
 
 ```ts
-type Project<S extends string, T extends string> = {
+interface Project<S extends string = string, T extends string = string> {
+	swatches: Swatches<S, T>
+	preferences?: ProjectPreferences
+	windowConfig?: WindowConfig
+}
+
+type Swatches<S extends string, T extends string> = {
 	[SwatchName: S]: {
 		[ToneName: T]: undefined | { l: number; c: number; h: number }
 	}
 }
 ```
+
+Projects also store user preferences and window configuration to maintain the workspace layout across sessions.
 
 ## Main features
 

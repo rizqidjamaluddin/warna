@@ -1,4 +1,4 @@
-import { Project, ProjectMetadata, SavedProject } from '../types'
+import { ProjectMetadata, SavedProject } from '../types'
 
 const DB_NAME = 'warna-db'
 const DB_VERSION = 1
@@ -101,6 +101,8 @@ export function createNewProject(name: string): SavedProject {
 			createdAt: now,
 			updatedAt: now,
 		},
-		data: {} as Project,
+		data: {
+			swatches: {},
+		},
 	}
 }

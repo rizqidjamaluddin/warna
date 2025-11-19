@@ -11,7 +11,9 @@ describe('db utilities', () => {
 			expect(project.metadata.id).toBeDefined()
 			expect(project.metadata.createdAt).toBeDefined()
 			expect(project.metadata.updatedAt).toBeDefined()
-			expect(project.data).toEqual({})
+			expect(project.data).toEqual({
+				swatches: {},
+			})
 		})
 
 		it('should create projects with unique IDs', () => {

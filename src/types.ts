@@ -38,12 +38,37 @@ export interface HSVColor {
 }
 
 /**
- * A project contains swatches, which contain tones with colors
+ * Swatches organized by swatch name and tone name
  */
-export type Project<S extends string = string, T extends string = string> = Record<
+export type Swatches<S extends string = string, T extends string = string> = Record<
 	S,
 	Record<T, LCHColor | undefined>
 >
+
+/**
+ * Project preferences (for future use)
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ProjectPreferences {
+	// To be defined based on user preferences
+}
+
+/**
+ * Window configuration (for future use)
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface WindowConfig {
+	// To be defined based on window management needs
+}
+
+/**
+ * A project contains swatches, preferences, and window configuration
+ */
+export interface Project<S extends string = string, T extends string = string> {
+	swatches: Swatches<S, T>
+	preferences?: ProjectPreferences
+	windowConfig?: WindowConfig
+}
 
 /**
  * Metadata for a saved project

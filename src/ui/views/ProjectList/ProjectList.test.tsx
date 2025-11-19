@@ -29,7 +29,9 @@ vi.mock('../../../utils/db', () => ({
 				createdAt: Date.now(),
 				updatedAt: Date.now(),
 			},
-			data: {},
+			data: {
+				swatches: {},
+			},
 		})
 	),
 	saveProject: vi.fn(() => Promise.resolve()),
@@ -40,7 +42,9 @@ vi.mock('../../../utils/db', () => ({
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
 		},
-		data: {},
+		data: {
+			swatches: {},
+		},
 	})),
 }))
 

@@ -17,7 +17,9 @@ const mockProject: SavedProject = {
 		createdAt: Date.now() - 86400000,
 		updatedAt: Date.now() - 3600000,
 	},
-	data: {},
+	data: {
+		swatches: {},
+	},
 }
 
 function renderProjectEditor(project: SavedProject) {
