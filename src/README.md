@@ -6,10 +6,10 @@ Colors are organized as a set of swatches (e.g. "red", "yellow"), composed of to
 
 ```ts
 type Project<S extends string, T extends string> = {
-  [SwatchName: S]: {
-    [ToneName: T]: undefined | { l: number; c: number; h: number };
-  };
-};
+	[SwatchName: S]: {
+		[ToneName: T]: undefined | { l: number; c: number; h: number }
+	}
+}
 ```
 
 ## Main features
