@@ -62,10 +62,15 @@ describe('ProjectList', () => {
 		})
 	})
 
-	it('should show loading state initially', () => {
+	it('should show loading state initially', async () => {
 		renderProjectList()
 
 		expect(screen.getByText('Loading projects...')).toBeInTheDocument()
+
+		// Wait for loading to complete to avoid act() warnings
+		await waitFor(() => {
+			expect(screen.queryByText('Loading projects...')).not.toBeInTheDocument()
+		})
 	})
 
 	it('should display list of projects after loading', async () => {
