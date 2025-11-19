@@ -1,23 +1,27 @@
 import { describe, expect, it } from 'vitest'
 import App from './App'
-import { render, screen } from './test/utils'
+import { render, screen, waitFor } from './test/utils'
 
 describe('App', () => {
-	it('should render the app title', () => {
+	it('should render the project list by default', async () => {
 		render(<App />)
 
-		expect(screen.getByText('Warna')).toBeInTheDocument()
+		// Should show loading first
+		expect(screen.getByText('Loading projects...')).toBeInTheDocument()
+
+		// Then show the project list
+		await waitFor(() => {
+			expect(screen.getByText('Warna')).toBeInTheDocument()
+			expect(screen.getByText('Create New Project')).toBeInTheDocument()
+			expect(screen.getByText('Your Projects')).toBeInTheDocument()
+		})
 	})
 
-	it('should render the subtitle', () => {
+	it('should show new project button', async () => {
 		render(<App />)
 
-		expect(screen.getByText('Color Palette Utility')).toBeInTheDocument()
-	})
-
-	it('should render the welcome message', () => {
-		render(<App />)
-
-		expect(screen.getByText(/Welcome to Warna/i)).toBeInTheDocument()
+		await waitFor(() => {
+			expect(screen.getByText('+ New Project')).toBeInTheDocument()
+		})
 	})
 })
