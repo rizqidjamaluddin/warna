@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useProject } from '../../hooks/useProject'
-import type { ProjectMetadata } from '../../types'
-import { createNewProject, listProjects, loadProject, saveProject } from '../../utils/db'
-import { Button } from '../Button'
-import { Input } from '../Input'
+import { useProject } from '../../../hooks/useProject'
+import type { ProjectMetadata } from '../../../types'
+import { createNewProject, listProjects, loadProject, saveProject } from '../../../utils/db'
+import { Button } from '../../Button'
+import { Input } from '../../Input'
 
 export function ProjectList() {
 	const [projects, setProjects] = useState<ProjectMetadata[]>([])

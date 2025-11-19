@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useProject } from '../../hooks/useProject'
-import { saveProject } from '../../utils/db'
-import { Button } from '../Button'
-import { Input } from '../Input'
+import { useProject } from '../../../hooks/useProject'
+import { saveProject } from '../../../utils/db'
+import { Button } from '../../Button'
+import { Input } from '../../Input'
 
 export function ProjectEditor() {
 	const { currentProject, setCurrentProject } = useProject()
