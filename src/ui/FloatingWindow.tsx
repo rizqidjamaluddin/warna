@@ -10,12 +10,14 @@ interface FloatingWindowProps {
 	width: number
 	height: number
 	title: string
+	isActive?: boolean
 	menuBarHeight: number
 	children: ReactNode
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string, x?: number, y?: number) => void
+	onSetActive?: () => void
 }
 
 export function FloatingWindow({
@@ -25,12 +27,14 @@ export function FloatingWindow({
 	width,
 	height,
 	title,
+	isActive,
 	menuBarHeight,
 	children,
 	onPositionChange,
 	onResize,
 	onClose,
 	onToggleFullscreen,
+	onSetActive,
 }: FloatingWindowProps) {
 	const [currentWidth, setCurrentWidth] = useState(width)
 	const [currentHeight, setCurrentHeight] = useState(height)
@@ -69,7 +73,7 @@ export function FloatingWindow({
 				width: currentWidth,
 				height: currentHeight,
 				position: 'fixed',
-				zIndex: 60,
+				zIndex: isActive ? 70 : 60, // Active window appears on top
 			}}
 			className="bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col"
 		>
@@ -83,6 +87,8 @@ export function FloatingWindow({
 						setCurrentY(y)
 						setPanStartX(x)
 						setPanStartY(y)
+						// Bring to front immediately via z-index
+						onSetActive?.()
 					}}
 					onPan={(event, info) => {
 						const newX = panStartX + info.offset.x

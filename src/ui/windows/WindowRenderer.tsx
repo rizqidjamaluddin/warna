@@ -7,6 +7,7 @@ import { FullscreenWindowManager } from './FullscreenWindowManager'
 interface WindowRendererProps {
 	windows: WindowInstance[]
 	focusedFullscreenWindowId?: string
+	activeFloatingWindowId: string | null
 	menuBarHeight: number
 	tabPositionsRef: React.RefObject<{ id: string; left: number; right: number }[]>
 	onPositionChange: (id: string, x: number, y: number) => void
@@ -17,11 +18,13 @@ interface WindowRendererProps {
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 	onFocusWindow: (id: string) => void
+	onSetActiveWindow: (id: string | null) => void
 }
 
 export function WindowRenderer({
 	windows,
 	focusedFullscreenWindowId,
+	activeFloatingWindowId,
 	menuBarHeight,
 	tabPositionsRef,
 	onPositionChange,
@@ -32,6 +35,7 @@ export function WindowRenderer({
 	onClose,
 	onToggleFullscreen,
 	onFocusWindow,
+	onSetActiveWindow,
 }: WindowRendererProps) {
 	const floatingWindows = windows.filter((w) => !w.isFullscreen)
 	const fullscreenWindows = windows.filter((w) => w.isFullscreen)
@@ -49,6 +53,7 @@ export function WindowRenderer({
 						width={window.width}
 						height={window.height}
 						isFullscreen={isFullscreen}
+						isActive={!isFullscreen && activeFloatingWindowId === window.id}
 						menuBarHeight={menuBarHeight}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
@@ -56,6 +61,7 @@ export function WindowRenderer({
 						onUpdateWindow={onUpdateWindow}
 						onClose={onClose}
 						onToggleFullscreen={onToggleFullscreen}
+						onSetActive={() => onSetActiveWindow(window.id)}
 					/>
 				)
 			default:

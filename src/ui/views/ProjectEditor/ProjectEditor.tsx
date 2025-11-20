@@ -13,6 +13,7 @@ export function ProjectEditor() {
 	const menuBarRef = useRef<HTMLDivElement>(null)
 	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
 	const tabPositionsRef = useRef<{ id: string; left: number; right: number }[]>([])
+	const [activeFloatingWindowId, setActiveFloatingWindowId] = useState<string | null>(null)
 
 
 	// Measure menu bar height with ResizeObserver for future-proofing
@@ -122,7 +123,16 @@ export function ProjectEditor() {
 	function handleWindowPositionChange(id: string, x: number, y: number) {
 		if (!currentProject) return
 
-		const updatedWindows = windows.map((window) => window.id === id ? { ...window, x, y } : window)
+		// Move window to end (bring to front) and update position
+		const targetWindow = windows.find((w) => w.id === id)
+		if (!targetWindow) return
+
+		const otherWindows = windows.filter((w) => w.id !== id)
+		const updatedWindow = { ...targetWindow, x, y }
+		const updatedWindows = [...otherWindows, updatedWindow]
+
+		// Clear active window after position is saved
+		setActiveFloatingWindowId(null)
 
 		const updatedProject = {
 			...currentProject,
@@ -515,6 +525,7 @@ export function ProjectEditor() {
 			<WindowRenderer
 				windows={windows}
 				focusedFullscreenWindowId={focusedFullscreenWindowId}
+				activeFloatingWindowId={activeFloatingWindowId}
 				menuBarHeight={menuBarHeight}
 				tabPositionsRef={tabPositionsRef}
 				onPositionChange={handleWindowPositionChange}
@@ -525,6 +536,7 @@ export function ProjectEditor() {
 				onClose={handleCloseWindow}
 				onToggleFullscreen={handleToggleFullscreen}
 				onFocusWindow={handleFocusWindow}
+				onSetActiveWindow={setActiveFloatingWindowId}
 			/>
 		</div>
 	)
