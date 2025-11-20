@@ -54,11 +54,31 @@ export interface ProjectPreferences {
 }
 
 /**
- * Window configuration (for future use)
+ * Base window interface with discriminated union by type
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface BaseWindow {
+	id: string
+	x: number
+	y: number
+}
+
+/**
+ * Debug window for testing
+ */
+export interface DebugWindow extends BaseWindow {
+	type: 'debug'
+}
+
+/**
+ * Union of all window types
+ */
+export type WindowInstance = DebugWindow
+
+/**
+ * Window configuration
+ */
 export interface WindowConfig {
-	// To be defined based on window management needs
+	windows: WindowInstance[]
 }
 
 /**

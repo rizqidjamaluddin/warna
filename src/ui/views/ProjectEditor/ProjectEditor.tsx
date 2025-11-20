@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
+import type { WindowInstance } from '../../../types'
 import { saveProject } from '../../../utils/db'
 import { Button } from '../../Button'
 import { Input } from '../../Input'
+import { WindowRenderer } from '../../windows/WindowRenderer'
 
 export function ProjectEditor() {
 	const { currentProject, setCurrentProject } = useProject()
@@ -10,9 +12,42 @@ export function ProjectEditor() {
 	const [editedName, setEditedName] = useState(currentProject?.metadata.name ?? '')
 	const [saving, setSaving] = useState(false)
 
+	// Initialize windows if not present
+	useEffect(() => {
+		if (currentProject && !currentProject.data.windowConfig?.windows) {
+			const initialWindows: WindowInstance[] = [
+				{
+					id: crypto.randomUUID(),
+					type: 'debug',
+					x: 100,
+					y: 100,
+				},
+			]
+
+			const updatedProject = {
+				...currentProject,
+				metadata: {
+					...currentProject.metadata,
+					updatedAt: Date.now(),
+				},
+				data: {
+					...currentProject.data,
+					windowConfig: {
+						windows: initialWindows,
+					},
+				},
+			}
+
+			setCurrentProject(updatedProject)
+			void saveProject(updatedProject)
+		}
+	}, [currentProject, setCurrentProject])
+
 	if (!currentProject) {
 		return null
 	}
+
+	const windows: WindowInstance[] = currentProject.data.windowConfig?.windows ?? []
 
 	async function handleSaveName() {
 		if (!editedName.trim() || !currentProject) { return }
@@ -39,6 +74,48 @@ export function ProjectEditor() {
 
 	function handleCloseProject() {
 		setCurrentProject(null)
+	}
+
+	function handleWindowPositionChange(id: string, x: number, y: number) {
+		const updatedWindows = windows.map((window) => window.id === id ? { ...window, x, y } : window)
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	function handleAddWindow(newWindow: WindowInstance) {
+		const updatedWindows = [...windows, newWindow]
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
 	}
 
 	return (
@@ -114,6 +191,12 @@ export function ProjectEditor() {
 					</div>
 				</div>
 			</main>
+
+			<WindowRenderer
+				windows={windows}
+				onPositionChange={handleWindowPositionChange}
+				onAddWindow={handleAddWindow}
+			/>
 		</div>
 	)
 }

@@ -6,7 +6,8 @@
 			"Bash(pnpm test:run:*)",
 			"Bash(pnpm build:*)",
 			"Bash(pnpm typecheck:*)",
-			"Bash(pnpm check:*)"
+			"Bash(pnpm check:*)",
+			"Bash(pnpm format:check:*)"
 		],
 		"deny": [],
 		"ask": []
