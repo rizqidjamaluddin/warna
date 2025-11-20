@@ -10,14 +10,14 @@ interface FloatingWindowProps {
 	width: number
 	height: number
 	title: string
-	isActive?: boolean
+	zIndex?: number
 	menuBarHeight: number
 	children: ReactNode
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string, x?: number, y?: number) => void
-	onSetActive?: () => void
+	onBringToFront?: () => void
 }
 
 export function FloatingWindow({
@@ -27,14 +27,14 @@ export function FloatingWindow({
 	width,
 	height,
 	title,
-	isActive,
+	zIndex = 60,
 	menuBarHeight,
 	children,
 	onPositionChange,
 	onResize,
 	onClose,
 	onToggleFullscreen,
-	onSetActive,
+	onBringToFront,
 }: FloatingWindowProps) {
 	const [currentWidth, setCurrentWidth] = useState(width)
 	const [currentHeight, setCurrentHeight] = useState(height)
@@ -73,13 +73,11 @@ export function FloatingWindow({
 				width: currentWidth,
 				height: currentHeight,
 				position: 'fixed',
-				zIndex: isActive ? 70 : 60, // Active window appears on top
+				zIndex,
 			}}
 			onPointerDown={() => {
-				// Bring to front immediately via z-index
-				onSetActive?.()
-				// Also reorder in array for permanent stacking
-				onPositionChange(id, currentX, currentY)
+				// Bring to front immediately (lightweight z-order update)
+				onBringToFront?.()
 			}}
 			className="bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col"
 		>
@@ -93,8 +91,6 @@ export function FloatingWindow({
 						setCurrentY(y)
 						setPanStartX(x)
 						setPanStartY(y)
-						// Bring to front immediately via z-index
-						onSetActive?.()
 					}}
 					onPan={(event, info) => {
 						const newX = panStartX + info.offset.x
@@ -125,14 +121,22 @@ export function FloatingWindow({
 				</motion.div>
 				<div className="flex items-stretch">
 					<button
-						onClick={() => onToggleFullscreen(id)}
+						onPointerDown={(e) => e.stopPropagation()}
+						onClick={(e) => {
+							e.stopPropagation()
+							onToggleFullscreen(id)
+						}}
 						className="px-3 py-2 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-colors"
 						title="Fullscreen"
 					>
 						<ArrowsPointingOutIcon className="w-4 h-4" />
 					</button>
 					<button
-						onClick={() => onClose(id)}
+						onPointerDown={(e) => e.stopPropagation()}
+						onClick={(e) => {
+							e.stopPropagation()
+							onClose(id)
+						}}
 						className="px-3 py-2 flex items-center justify-center text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors rounded-tr-lg"
 						title="Close"
 					>

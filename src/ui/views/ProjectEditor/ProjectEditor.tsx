@@ -13,7 +13,7 @@ export function ProjectEditor() {
 	const menuBarRef = useRef<HTMLDivElement>(null)
 	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
 	const tabPositionsRef = useRef<{ id: string; left: number; right: number }[]>([])
-	const [activeFloatingWindowId, setActiveFloatingWindowId] = useState<string | null>(null)
+	const [floatingWindowZOrder, setFloatingWindowZOrder] = useState<string[]>([])
 
 
 	// Measure menu bar height with ResizeObserver for future-proofing
@@ -30,6 +30,32 @@ export function ProjectEditor() {
 
 		return () => resizeObserver.disconnect()
 	}, [])
+
+	// Initialize z-order for floating windows
+	useEffect(() => {
+		if (!currentProject) return
+
+		const allWindows = currentProject.data.windowConfig?.windows ?? []
+		const floatingWindows = allWindows.filter((w) => !w.isFullscreen)
+		const currentIds = floatingWindows.map((w) => w.id)
+
+		// Only update if the set of floating windows changed
+		const currentSet = new Set(currentIds)
+		const zOrderSet = new Set(floatingWindowZOrder)
+		const hasChanged = currentIds.length !== floatingWindowZOrder.length ||
+			currentIds.some((id) => !zOrderSet.has(id))
+
+		if (hasChanged) {
+			// Preserve existing order, add new windows to end
+			const newZOrder = floatingWindowZOrder.filter((id) => currentSet.has(id))
+			currentIds.forEach((id) => {
+				if (!zOrderSet.has(id)) {
+					newZOrder.push(id)
+				}
+			})
+			setFloatingWindowZOrder(newZOrder)
+		}
+	}, [currentProject, floatingWindowZOrder])
 
 	// Initialize windows if not present
 	useEffect(() => {
@@ -120,19 +146,18 @@ export function ProjectEditor() {
 		setCurrentProject(null)
 	}
 
+	function handleBringToFront(id: string) {
+		// Move window to end of z-order (lightweight, no database save)
+		setFloatingWindowZOrder((prev) => {
+			const filtered = prev.filter((wId) => wId !== id)
+			return [...filtered, id]
+		})
+	}
+
 	function handleWindowPositionChange(id: string, x: number, y: number) {
 		if (!currentProject) return
 
-		// Move window to end (bring to front) and update position
-		const targetWindow = windows.find((w) => w.id === id)
-		if (!targetWindow) return
-
-		const otherWindows = windows.filter((w) => w.id !== id)
-		const updatedWindow = { ...targetWindow, x, y }
-		const updatedWindows = [...otherWindows, updatedWindow]
-
-		// Clear active window after position is saved
-		setActiveFloatingWindowId(null)
+		const updatedWindows = windows.map((window) => window.id === id ? { ...window, x, y } : window)
 
 		const updatedProject = {
 			...currentProject,
@@ -525,7 +550,7 @@ export function ProjectEditor() {
 			<WindowRenderer
 				windows={windows}
 				focusedFullscreenWindowId={focusedFullscreenWindowId}
-				activeFloatingWindowId={activeFloatingWindowId}
+				floatingWindowZOrder={floatingWindowZOrder}
 				menuBarHeight={menuBarHeight}
 				tabPositionsRef={tabPositionsRef}
 				onPositionChange={handleWindowPositionChange}
@@ -536,7 +561,7 @@ export function ProjectEditor() {
 				onClose={handleCloseWindow}
 				onToggleFullscreen={handleToggleFullscreen}
 				onFocusWindow={handleFocusWindow}
-				onSetActiveWindow={setActiveFloatingWindowId}
+				onBringToFront={handleBringToFront}
 			/>
 		</div>
 	)

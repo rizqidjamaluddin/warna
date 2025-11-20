@@ -14,8 +14,8 @@ interface DebugWindowProps {
 	isFullscreen?: boolean
 	menuBarHeight: number
 	// Generic window management props (passed through to FloatingWindow)
-	isActive?: boolean
-	onSetActive?: () => void
+	zIndex?: number
+	onBringToFront?: () => void
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onAddWindow: (window: WindowInstance) => void
@@ -32,7 +32,7 @@ export function DebugWindow({
 	width,
 	height,
 	isFullscreen,
-	isActive,
+	zIndex,
 	menuBarHeight,
 	onPositionChange,
 	onResize,
@@ -40,7 +40,7 @@ export function DebugWindow({
 	onUpdateWindow,
 	onClose,
 	onToggleFullscreen,
-	onSetActive,
+	onBringToFront,
 }: DebugWindowProps) {
 	const [localTitle, setLocalTitle] = useState(title)
 
@@ -101,13 +101,13 @@ export function DebugWindow({
 			width={width}
 			height={height}
 			title={localTitle}
-			isActive={isActive}
+			zIndex={zIndex}
 			menuBarHeight={menuBarHeight}
 			onPositionChange={onPositionChange}
 			onResize={onResize}
 			onClose={onClose}
 			onToggleFullscreen={onToggleFullscreen}
-			onSetActive={onSetActive}
+			onBringToFront={onBringToFront}
 		>
 			{content}
 		</FloatingWindow>

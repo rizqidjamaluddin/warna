@@ -7,7 +7,7 @@ import { FullscreenWindowManager } from './FullscreenWindowManager'
 interface WindowRendererProps {
 	windows: WindowInstance[]
 	focusedFullscreenWindowId?: string
-	activeFloatingWindowId: string | null
+	floatingWindowZOrder: string[]
 	menuBarHeight: number
 	tabPositionsRef: React.RefObject<{ id: string; left: number; right: number }[]>
 	onPositionChange: (id: string, x: number, y: number) => void
@@ -18,13 +18,13 @@ interface WindowRendererProps {
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 	onFocusWindow: (id: string) => void
-	onSetActiveWindow: (id: string | null) => void
+	onBringToFront: (id: string) => void
 }
 
 export function WindowRenderer({
 	windows,
 	focusedFullscreenWindowId,
-	activeFloatingWindowId,
+	floatingWindowZOrder,
 	menuBarHeight,
 	tabPositionsRef,
 	onPositionChange,
@@ -35,10 +35,17 @@ export function WindowRenderer({
 	onClose,
 	onToggleFullscreen,
 	onFocusWindow,
-	onSetActiveWindow,
+	onBringToFront,
 }: WindowRendererProps) {
 	const floatingWindows = windows.filter((w) => !w.isFullscreen)
 	const fullscreenWindows = windows.filter((w) => w.isFullscreen)
+
+	// Calculate z-index for each floating window based on z-order
+	function getWindowZIndex(windowId: string): number {
+		const baseZIndex = 60
+		const index = floatingWindowZOrder.indexOf(windowId)
+		return index >= 0 ? baseZIndex + index : baseZIndex
+	}
 
 	function renderWindowContent(window: WindowInstance, isFullscreen: boolean) {
 		switch (window.type) {
@@ -53,7 +60,7 @@ export function WindowRenderer({
 						width={window.width}
 						height={window.height}
 						isFullscreen={isFullscreen}
-						isActive={!isFullscreen && activeFloatingWindowId === window.id}
+						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
 						menuBarHeight={menuBarHeight}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
@@ -61,7 +68,7 @@ export function WindowRenderer({
 						onUpdateWindow={onUpdateWindow}
 						onClose={onClose}
 						onToggleFullscreen={onToggleFullscreen}
-						onSetActive={() => onSetActiveWindow(window.id)}
+						onBringToFront={() => onBringToFront(window.id)}
 					/>
 				)
 			default:
