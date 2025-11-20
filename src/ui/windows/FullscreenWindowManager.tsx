@@ -67,9 +67,9 @@ export function FullscreenWindowManager({
 					<Reorder.Item
 						key={window.id}
 						value={window}
-						ref={(el: HTMLDivElement | null) => {
+						ref={(el: HTMLElement | null) => {
 							if (el) {
-								tabRefs.current.set(window.id, el)
+								tabRefs.current.set(window.id, el as HTMLDivElement)
 							} else {
 								tabRefs.current.delete(window.id)
 							}

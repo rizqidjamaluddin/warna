@@ -120,6 +120,8 @@ export function ProjectEditor() {
 	}
 
 	function handleWindowPositionChange(id: string, x: number, y: number) {
+		if (!currentProject) return
+
 		const updatedWindows = windows.map((window) => window.id === id ? { ...window, x, y } : window)
 
 		const updatedProject = {
@@ -142,6 +144,8 @@ export function ProjectEditor() {
 	}
 
 	function handleWindowResize(id: string, width: number, height: number) {
+		if (!currentProject) return
+
 		const updatedWindows = windows.map((window) => window.id === id ? { ...window, width, height } : window)
 
 		const updatedProject = {
@@ -164,6 +168,8 @@ export function ProjectEditor() {
 	}
 
 	function handleAddWindow(newWindow: WindowInstance) {
+		if (!currentProject) return
+
 		const updatedWindows = [...windows, newWindow]
 
 		const updatedProject = {
@@ -186,6 +192,8 @@ export function ProjectEditor() {
 	}
 
 	function handleUpdateWindow(id: string, updates: Partial<WindowInstance>) {
+		if (!currentProject) return
+
 		const updatedWindows = windows.map((w) => (w.id === id ? { ...w, ...updates } : w))
 
 		const updatedProject = {
@@ -208,8 +216,10 @@ export function ProjectEditor() {
 	}
 
 	function handleCloseWindow(id: string) {
+		if (!currentProject) return
+
 		const updatedWindows = windows.filter((w) => w.id !== id)
-		let newFocusedId = focusedFullscreenWindowId
+		let newFocusedId: string | undefined = focusedFullscreenWindowId
 
 		// If closing the focused fullscreen window, focus the next or previous one
 		if (focusedFullscreenWindowId === id) {
@@ -255,6 +265,8 @@ export function ProjectEditor() {
 	}
 
 	function handleToggleFullscreen(id: string, x?: number, y?: number) {
+		if (!currentProject) return
+
 		const targetWindow = windows.find((w) => w.id === id)
 		if (!targetWindow) { return }
 
@@ -361,6 +373,8 @@ export function ProjectEditor() {
 	}
 
 	function handleFocusWindow(id: string) {
+		if (!currentProject) return
+
 		const updatedProject = {
 			...currentProject,
 			metadata: {
@@ -381,6 +395,8 @@ export function ProjectEditor() {
 	}
 
 	function handleReorderWindows(reorderedFullscreenWindows: WindowInstance[]) {
+		if (!currentProject) return
+
 		// Merge reordered fullscreen windows with unchanged floating windows
 		const floatingWindows = windows.filter((w) => !w.isFullscreen)
 		const updatedWindows = [...floatingWindows, ...reorderedFullscreenWindows]
