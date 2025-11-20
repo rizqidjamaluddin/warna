@@ -1,7 +1,7 @@
 import { ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface FloatingWindowProps {
 	id: string
@@ -38,20 +38,24 @@ export function FloatingWindow({
 	const [currentY, setCurrentY] = useState(y)
 	const [panStartX, setPanStartX] = useState(x)
 	const [panStartY, setPanStartY] = useState(y)
-	const [isPanning, setIsPanning] = useState(false)
 	const [resizeStartWidth, setResizeStartWidth] = useState(width)
 	const [resizeStartHeight, setResizeStartHeight] = useState(height)
 	const [isResizing, setIsResizing] = useState(false)
+	const isPanningRef = useRef(false)
 
 	// Calculate max dimensions (80% of viewport)
 	const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.8 : 1000
 	const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.8 : 800
 
-	// Sync position from props when they change
+	// Sync position from props when not panning
+	// Needed for tear-out gesture - guards prevent cascading renders
 	useEffect(() => {
-		setCurrentX(x)
-		setCurrentY(y)
-	}, [x, y])
+		if (!isPanningRef.current && (currentX !== x || currentY !== y)) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setCurrentX(x)
+			setCurrentY(y)
+		}
+	}, [x, y, currentX, currentY])
 
 	return (
 		<motion.div
@@ -73,7 +77,7 @@ export function FloatingWindow({
 				<motion.div
 					className="flex-1 cursor-move px-4 py-2 flex items-center"
 					onPanStart={() => {
-						setIsPanning(true)
+						isPanningRef.current = true
 						// Use props directly to avoid any state sync issues
 						setCurrentX(x)
 						setCurrentY(y)
@@ -91,7 +95,7 @@ export function FloatingWindow({
 						setCurrentY(constrainedY)
 					}}
 					onPanEnd={() => {
-						setIsPanning(false)
+						isPanningRef.current = false
 						onPositionChange(id, currentX, currentY)
 					}}
 				>

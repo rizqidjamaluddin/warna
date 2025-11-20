@@ -1,6 +1,6 @@
 import { ArrowsPointingInIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { AnimatePresence, Reorder } from 'motion/react'
-import type { ReactNode } from 'react'
+import { Reorder } from 'motion/react'
+import React, { type ReactNode } from 'react'
 import type { WindowInstance } from '../../types'
 
 interface FullscreenWindowManagerProps {
@@ -24,6 +24,8 @@ export function FullscreenWindowManager({
 	onToggleFullscreen,
 	children,
 }: FullscreenWindowManagerProps) {
+	const [tearingOutId, setTearingOutId] = React.useState<string | null>(null)
+
 	if (windows.length === 0) {
 		return null
 	}
@@ -57,9 +59,15 @@ export function FullscreenWindowManager({
 							${window.id === activeWindowId ? 'bg-white' : 'hover:bg-gray-50'}
 						`}
 						onClick={() => onFocusWindow(window.id)}
+						onDragStart={() => {
+							setTearingOutId(null)
+						}}
 						onDrag={(event, info) => {
-							// If dragged down more than 50px, un-fullscreen the window immediately
-							if (info.offset.y > 50) {
+							// If dragged down more than 25px, un-fullscreen the window immediately
+							// Only trigger once per drag gesture
+							if (info.offset.y > 25 && tearingOutId !== window.id) {
+								setTearingOutId(window.id)
+
 								// Position window so tab bar is centered under cursor
 								const mouseEvent = event as MouseEvent
 								const cursorX = mouseEvent.clientX
