@@ -21,6 +21,7 @@ export function ProjectEditor() {
 					type: 'debug',
 					x: 100,
 					y: 100,
+					isFullscreen: false,
 				},
 			]
 
@@ -48,6 +49,7 @@ export function ProjectEditor() {
 	}
 
 	const windows: WindowInstance[] = currentProject.data.windowConfig?.windows ?? []
+	const focusedFullscreenWindowId = currentProject.data.windowConfig?.focusedFullscreenWindowId
 
 	async function handleSaveName() {
 		if (!editedName.trim() || !currentProject) { return }
@@ -110,6 +112,7 @@ export function ProjectEditor() {
 				...currentProject.data,
 				windowConfig: {
 					windows: updatedWindows,
+					focusedFullscreenWindowId,
 				},
 			},
 		}
@@ -118,8 +121,95 @@ export function ProjectEditor() {
 		void saveProject(updatedProject)
 	}
 
+	function handleCloseWindow(id: string) {
+		const updatedWindows = windows.filter((w) => w.id !== id)
+		let newFocusedId = focusedFullscreenWindowId
+
+		// If closing the focused fullscreen window, focus the next one
+		if (focusedFullscreenWindowId === id) {
+			const remainingFullscreen = updatedWindows.filter((w) => w.isFullscreen)
+			newFocusedId = remainingFullscreen.length > 0 ? remainingFullscreen[0].id : undefined
+		}
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+					focusedFullscreenWindowId: newFocusedId,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	function handleToggleFullscreen(id: string) {
+		const updatedWindows = windows.map((w) => w.id === id ? { ...w, isFullscreen: !w.isFullscreen } : w)
+
+		// If making fullscreen, set it as focused
+		const window = windows.find((w) => w.id === id)
+		const newFocusedId = window && !window.isFullscreen ? id : focusedFullscreenWindowId
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+					focusedFullscreenWindowId: newFocusedId,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	function handleFocusWindow(id: string) {
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows,
+					focusedFullscreenWindowId: id,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	const hasFullscreenWindows = windows.some((w) => w.isFullscreen)
+
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-gray-50 flex flex-col">
+			{/* Menu bar - always visible */}
+			<div className="bg-gray-800 text-white px-4 py-2 flex items-center gap-4" style={{ zIndex: 100 }}>
+				<span className="font-semibold">Warna</span>
+				<div className="flex gap-2 text-sm">
+					<button className="hover:bg-gray-700 px-2 py-1 rounded">File</button>
+					<button className="hover:bg-gray-700 px-2 py-1 rounded">Edit</button>
+					<button className="hover:bg-gray-700 px-2 py-1 rounded">View</button>
+				</div>
+			</div>
+
 			<header className="bg-white shadow-sm">
 				<div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 					<div className="flex items-center gap-4">
@@ -181,22 +271,28 @@ export function ProjectEditor() {
 				</div>
 			</header>
 
-			<main className="max-w-7xl mx-auto px-4 py-8">
-				<div className="bg-white rounded-lg shadow-sm p-8">
-					<div className="text-center text-gray-500">
-						<p className="text-lg mb-2">Project Editor</p>
-						<p className="text-sm">
-							Color editing interface will be implemented here.
-						</p>
+			<main className={`${hasFullscreenWindows ? '' : 'max-w-7xl mx-auto px-4 py-8'} flex-1`}>
+				{!hasFullscreenWindows && (
+					<div className="bg-white rounded-lg shadow-sm p-8">
+						<div className="text-center text-gray-500">
+							<p className="text-lg mb-2">Project Editor</p>
+							<p className="text-sm">
+								Color editing interface will be implemented here.
+							</p>
+						</div>
 					</div>
-				</div>
-			</main>
+				)}
 
-			<WindowRenderer
-				windows={windows}
-				onPositionChange={handleWindowPositionChange}
-				onAddWindow={handleAddWindow}
-			/>
+				<WindowRenderer
+					windows={windows}
+					focusedFullscreenWindowId={focusedFullscreenWindowId}
+					onPositionChange={handleWindowPositionChange}
+					onAddWindow={handleAddWindow}
+					onClose={handleCloseWindow}
+					onToggleFullscreen={handleToggleFullscreen}
+					onFocusWindow={handleFocusWindow}
+				/>
+			</main>
 		</div>
 	)
 }

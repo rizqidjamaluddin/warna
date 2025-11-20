@@ -60,6 +60,7 @@ export interface BaseWindow {
 	id: string
 	x: number
 	y: number
+	isFullscreen: boolean
 }
 
 /**
@@ -79,6 +80,7 @@ export type WindowInstance = DebugWindow
  */
 export interface WindowConfig {
 	windows: WindowInstance[]
+	focusedFullscreenWindowId?: string
 }
 
 /**

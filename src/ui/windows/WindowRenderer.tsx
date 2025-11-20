@@ -1,32 +1,67 @@
 import type { WindowInstance } from '../../types'
 import { DebugWindow } from './DebugWindow'
+import { FullscreenWindowManager } from './FullscreenWindowManager'
 
 interface WindowRendererProps {
 	windows: WindowInstance[]
+	focusedFullscreenWindowId?: string
 	onPositionChange: (id: string, x: number, y: number) => void
 	onAddWindow: (window: WindowInstance) => void
+	onClose: (id: string) => void
+	onToggleFullscreen: (id: string) => void
+	onFocusWindow: (id: string) => void
 }
 
-export function WindowRenderer({ windows, onPositionChange, onAddWindow }: WindowRendererProps) {
+export function WindowRenderer({
+	windows,
+	focusedFullscreenWindowId,
+	onPositionChange,
+	onAddWindow,
+	onClose,
+	onToggleFullscreen,
+	onFocusWindow,
+}: WindowRendererProps) {
+	const floatingWindows = windows.filter((w) => !w.isFullscreen)
+	const fullscreenWindows = windows.filter((w) => w.isFullscreen)
+
+	function renderWindowContent(window: WindowInstance, isFullscreen: boolean) {
+		switch (window.type) {
+			case 'debug':
+				return (
+					<DebugWindow
+						key={window.id}
+						id={window.id}
+						x={window.x}
+						y={window.y}
+						isFullscreen={isFullscreen}
+						onPositionChange={onPositionChange}
+						onAddWindow={onAddWindow}
+						onClose={onClose}
+						onToggleFullscreen={onToggleFullscreen}
+					/>
+				)
+			default:
+				return null
+		}
+	}
+
 	return (
 		<>
-			{windows.map((window) => {
-				switch (window.type) {
-					case 'debug':
-						return (
-							<DebugWindow
-								key={window.id}
-								id={window.id}
-								x={window.x}
-								y={window.y}
-								onPositionChange={onPositionChange}
-								onAddWindow={onAddWindow}
-							/>
-						)
-					default:
-						return null
-				}
-			})}
+			{/* Floating windows */}
+			{floatingWindows.map((window) => renderWindowContent(window, false))}
+
+			{/* Fullscreen windows */}
+			{fullscreenWindows.length > 0 && (
+				<FullscreenWindowManager
+					windows={fullscreenWindows}
+					focusedWindowId={focusedFullscreenWindowId}
+					onFocusWindow={onFocusWindow}
+					onClose={onClose}
+					onToggleFullscreen={onToggleFullscreen}
+				>
+					{(window) => renderWindowContent(window, true)}
+				</FullscreenWindowManager>
+			)}
 		</>
 	)
 }
