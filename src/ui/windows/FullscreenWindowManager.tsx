@@ -1,5 +1,5 @@
 import { ArrowsPointingInIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Reorder } from 'motion/react'
+import { AnimatePresence, Reorder } from 'motion/react'
 import type { ReactNode } from 'react'
 import type { WindowInstance } from '../../types'
 
@@ -45,8 +45,13 @@ export function FullscreenWindowManager({
 					<Reorder.Item
 						key={window.id}
 						value={window}
+						initial={{ width: 0, opacity: 0 }}
+						animate={{ width: 'auto', opacity: 1 }}
+						exit={{ width: 0, opacity: 0 }}
+						transition={{ duration: 0.2 }}
+						style={{ overflow: 'hidden' }}
 						className={`
-							flex items-center gap-2 px-4 py-2 border-r border-gray-200 cursor-pointer
+							flex items-center gap-2 px-4 py-2 border-r border-gray-200 cursor-pointer whitespace-nowrap
 							${window.id === activeWindowId ? 'bg-white' : 'hover:bg-gray-50'}
 						`}
 						onClick={() => onFocusWindow(window.id)}

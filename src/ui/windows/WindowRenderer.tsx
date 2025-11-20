@@ -1,3 +1,4 @@
+import { AnimatePresence } from 'motion/react'
 import type { WindowInstance } from '../../types'
 import { DebugWindow } from './DebugWindow'
 import { FullscreenWindowManager } from './FullscreenWindowManager'
@@ -59,7 +60,9 @@ export function WindowRenderer({
 	return (
 		<>
 			{/* Floating windows */}
-			{floatingWindows.map((window) => renderWindowContent(window, false))}
+			<AnimatePresence>
+				{floatingWindows.map((window) => renderWindowContent(window, false))}
+			</AnimatePresence>
 
 			{/* Fullscreen windows */}
 			{fullscreenWindows.length > 0 && (
