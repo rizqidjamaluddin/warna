@@ -1,7 +1,7 @@
 import { ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { motion, useDragControls } from 'motion/react'
+import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface FloatingWindowProps {
 	id: string
@@ -32,9 +32,13 @@ export function FloatingWindow({
 	onClose,
 	onToggleFullscreen,
 }: FloatingWindowProps) {
-	const dragControls = useDragControls()
 	const [currentWidth, setCurrentWidth] = useState(width)
 	const [currentHeight, setCurrentHeight] = useState(height)
+	const [currentX, setCurrentX] = useState(x)
+	const [currentY, setCurrentY] = useState(y)
+	const [panStartX, setPanStartX] = useState(x)
+	const [panStartY, setPanStartY] = useState(y)
+	const [isPanning, setIsPanning] = useState(false)
 	const [resizeStartWidth, setResizeStartWidth] = useState(width)
 	const [resizeStartHeight, setResizeStartHeight] = useState(height)
 	const [isResizing, setIsResizing] = useState(false)
@@ -43,62 +47,69 @@ export function FloatingWindow({
 	const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.8 : 1000
 	const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.8 : 800
 
-	// Calculate drag constraints to prevent dragging off-screen or behind menu bar
-	const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
-	const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080
-
-	const dragConstraints = {
-		top: menuBarHeight - y, // Can't go above menu bar
-		left: -x, // Can't go past left edge
-		right: viewportWidth - x - currentWidth, // Can't go past right edge
-		bottom: viewportHeight - y - currentHeight, // Can't go past bottom edge
-	}
+	// Sync position from props when they change
+	useEffect(() => {
+		setCurrentX(x)
+		setCurrentY(y)
+	}, [x, y])
 
 	return (
 		<motion.div
-			drag
-			dragControls={dragControls}
-			dragConstraints={dragConstraints}
-			dragMomentum={false}
-			dragElastic={0}
-			dragListener={false}
 			initial={{ opacity: 0, scale: 0.9, filter: 'blur(4px)' }}
 			animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
 			exit={{ opacity: 0, scale: 0.9, filter: 'blur(4px)' }}
 			transition={{ duration: 0.2 }}
 			style={{
-				x,
-				y,
+				x: currentX,
+				y: currentY,
 				width: currentWidth,
 				height: currentHeight,
 				position: 'fixed',
 				zIndex: 60,
 			}}
-			onDragEnd={(_event, info) => {
-				const newX = x + info.offset.x
-				const newY = Math.max(menuBarHeight, y + info.offset.y)
-				onPositionChange(id, newX, newY)
-			}}
 			className="bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col"
 		>
-			<div className="px-4 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg select-none flex items-center justify-between">
-				<h3
-					onPointerDown={(e) => dragControls.start(e)}
-					className="text-sm font-medium text-gray-900 cursor-move flex-1"
+			<div className="bg-gray-100 border-b border-gray-200 rounded-t-lg select-none flex items-stretch">
+				<motion.div
+					className="flex-1 cursor-move px-4 py-2 flex items-center"
+					onPanStart={() => {
+						setIsPanning(true)
+						// Use props directly to avoid any state sync issues
+						setCurrentX(x)
+						setCurrentY(y)
+						setPanStartX(x)
+						setPanStartY(y)
+					}}
+					onPan={(_event, info) => {
+						const newX = panStartX + info.offset.x
+						const newY = panStartY + info.offset.y
+
+						// Only constrain top to menu bar, allow off-screen in other directions
+						const constrainedY = Math.max(menuBarHeight, newY)
+
+						setCurrentX(newX)
+						setCurrentY(constrainedY)
+					}}
+					onPanEnd={() => {
+						setIsPanning(false)
+						onPositionChange(id, currentX, currentY)
+					}}
 				>
-					{title || 'Untitled Window'}
-				</h3>
-				<div className="flex items-center gap-1">
+					<h3 className="text-sm font-medium text-gray-900">
+						{title || 'Untitled Window'}
+					</h3>
+				</motion.div>
+				<div className="flex items-stretch">
 					<button
 						onClick={() => onToggleFullscreen(id)}
-						className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition-colors"
+						className="px-3 py-2 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-200 transition-colors"
 						title="Fullscreen"
 					>
 						<ArrowsPointingOutIcon className="w-4 h-4" />
 					</button>
 					<button
 						onClick={() => onClose(id)}
-						className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+						className="px-3 py-2 flex items-center justify-center text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors rounded-tr-lg"
 						title="Close"
 					>
 						<XMarkIcon className="w-4 h-4" />

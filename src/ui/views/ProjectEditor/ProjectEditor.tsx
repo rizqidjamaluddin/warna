@@ -70,14 +70,24 @@ export function ProjectEditor() {
 	// Calculate max dimensions (80% of viewport)
 	const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.8 : 1000
 	const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.8 : 800
+	const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
+	const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080
 
 	// Ensure all windows have required fields for backwards compatibility and clamp to viewport size
-	const windows: WindowInstance[] = (currentProject.data.windowConfig?.windows ?? []).map((win) => ({
-		...win,
-		title: win.title ?? 'Untitled Window',
-		width: Math.min(win.width ?? 300, maxWidth),
-		height: Math.min(win.height ?? 200, maxHeight),
-	}))
+	const windows: WindowInstance[] = (currentProject.data.windowConfig?.windows ?? []).map((win) => {
+		const clampedWidth = Math.min(win.width ?? 300, maxWidth)
+		const clampedHeight = Math.min(win.height ?? 200, maxHeight)
+
+		return {
+			...win,
+			title: win.title ?? 'Untitled Window',
+			width: clampedWidth,
+			height: clampedHeight,
+			// Clamp position to keep windows on-screen and below menu bar
+			x: Math.max(0, Math.min(win.x, viewportWidth - clampedWidth)),
+			y: Math.max(menuBarHeight, Math.min(win.y, viewportHeight - clampedHeight)),
+		}
+	})
 	const focusedFullscreenWindowId = currentProject.data.windowConfig?.focusedFullscreenWindowId
 
 	async function handleSaveName() {
