@@ -12,6 +12,8 @@ export function ProjectEditor() {
 	const [saving, setSaving] = useState(false)
 	const menuBarRef = useRef<HTMLDivElement>(null)
 	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
+	const tabPositionsRef = useRef<{ id: string; left: number; right: number }[]>([])
+
 
 	// Measure menu bar height with ResizeObserver for future-proofing
 	useEffect(() => {
@@ -266,15 +268,29 @@ export function ProjectEditor() {
 			const otherWindows = windows.filter((w) => w.id !== id)
 			const fullscreenWindow = { ...targetWindow, isFullscreen: true }
 
-			// If cursor X provided, calculate insertion position based on tab position
+			// If cursor X provided, calculate insertion position based on actual tab positions
 			if (x !== undefined) {
-				const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
 				const fullscreenWindows = otherWindows.filter((w) => w.isFullscreen)
 				const floatingWindows = otherWindows.filter((w) => !w.isFullscreen)
 
-				// Calculate insertion index based on cursor X position (percentage of viewport)
-				const positionRatio = Math.max(0, Math.min(1, x / viewportWidth))
-				const insertIndex = Math.round(positionRatio * fullscreenWindows.length)
+				let insertIndex = fullscreenWindows.length // Default to end
+
+				// Find which tab the cursor is over
+				for (let i = 0; i < tabPositionsRef.current.length; i++) {
+					const tabPos = tabPositionsRef.current[i]
+					if (x >= tabPos.left && x <= tabPos.right) {
+						// Cursor is over this tab
+						const tabCenter = (tabPos.left + tabPos.right) / 2
+						if (x < tabCenter) {
+							// On left side of tab, insert before it
+							insertIndex = i
+						} else {
+							// On right side of tab, insert after it
+							insertIndex = i + 1
+						}
+						break
+					}
+				}
 
 				// Insert at calculated position
 				const updatedFullscreen = [
@@ -484,6 +500,7 @@ export function ProjectEditor() {
 				windows={windows}
 				focusedFullscreenWindowId={focusedFullscreenWindowId}
 				menuBarHeight={menuBarHeight}
+				tabPositionsRef={tabPositionsRef}
 				onPositionChange={handleWindowPositionChange}
 				onResize={handleWindowResize}
 				onAddWindow={handleAddWindow}

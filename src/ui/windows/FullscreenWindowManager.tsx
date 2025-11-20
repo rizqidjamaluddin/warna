@@ -7,6 +7,7 @@ interface FullscreenWindowManagerProps {
 	windows: WindowInstance[]
 	focusedWindowId?: string
 	menuBarHeight: number
+	tabPositionsRef: React.RefObject<{ id: string; left: number; right: number }[]>
 	onFocusWindow: (id: string) => void
 	onReorderWindows: (windows: WindowInstance[]) => void
 	onClose: (id: string) => void
@@ -18,6 +19,7 @@ export function FullscreenWindowManager({
 	windows,
 	focusedWindowId,
 	menuBarHeight,
+	tabPositionsRef,
 	onFocusWindow,
 	onReorderWindows,
 	onClose,
@@ -25,6 +27,22 @@ export function FullscreenWindowManager({
 	children,
 }: FullscreenWindowManagerProps) {
 	const [tearingOutId, setTearingOutId] = React.useState<string | null>(null)
+	const tabRefs = React.useRef<Map<string, HTMLDivElement>>(new Map())
+
+	// Measure and update tab positions
+	React.useEffect(() => {
+		const positions = windows.map((window) => {
+			const element = tabRefs.current.get(window.id)
+			if (element) {
+				const rect = element.getBoundingClientRect()
+				return { id: window.id, left: rect.left, right: rect.right }
+			}
+			return { id: window.id, left: 0, right: 0 }
+		})
+		if (tabPositionsRef.current) {
+			tabPositionsRef.current = positions
+		}
+	}, [windows, tabPositionsRef])
 
 	if (windows.length === 0) {
 		return null
@@ -49,6 +67,13 @@ export function FullscreenWindowManager({
 					<Reorder.Item
 						key={window.id}
 						value={window}
+						ref={(el: HTMLDivElement | null) => {
+							if (el) {
+								tabRefs.current.set(window.id, el)
+							} else {
+								tabRefs.current.delete(window.id)
+							}
+						}}
 						initial={{ width: 0, opacity: 0 }}
 						animate={{ width: 'auto', opacity: 1 }}
 						exit={{ width: 0, opacity: 0 }}

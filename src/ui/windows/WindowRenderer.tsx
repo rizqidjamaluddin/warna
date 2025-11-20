@@ -1,4 +1,5 @@
 import { AnimatePresence } from 'motion/react'
+import React from 'react'
 import type { WindowInstance } from '../../types'
 import { DebugWindow } from './DebugWindow'
 import { FullscreenWindowManager } from './FullscreenWindowManager'
@@ -7,6 +8,7 @@ interface WindowRendererProps {
 	windows: WindowInstance[]
 	focusedFullscreenWindowId?: string
 	menuBarHeight: number
+	tabPositionsRef: React.RefObject<{ id: string; left: number; right: number }[]>
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onAddWindow: (window: WindowInstance) => void
@@ -21,6 +23,7 @@ export function WindowRenderer({
 	windows,
 	focusedFullscreenWindowId,
 	menuBarHeight,
+	tabPositionsRef,
 	onPositionChange,
 	onResize,
 	onAddWindow,
@@ -73,6 +76,7 @@ export function WindowRenderer({
 					windows={fullscreenWindows}
 					focusedWindowId={focusedFullscreenWindowId}
 					menuBarHeight={menuBarHeight}
+					tabPositionsRef={tabPositionsRef}
 					onFocusWindow={onFocusWindow}
 					onReorderWindows={onReorderWindows}
 					onClose={onClose}
