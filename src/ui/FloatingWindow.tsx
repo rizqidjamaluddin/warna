@@ -31,11 +31,12 @@ export function FloatingWindow({
 			dragControls={dragControls}
 			dragMomentum={false}
 			dragElastic={0}
+			dragListener={false}
 			style={{
 				x,
 				y,
 				position: 'fixed',
-				zIndex: 50,
+				zIndex: 60,
 			}}
 			onDragEnd={(_event, info) => {
 				const newX = x + info.offset.x
@@ -54,14 +55,14 @@ export function FloatingWindow({
 				<div className="flex items-center gap-1">
 					<button
 						onClick={() => onToggleFullscreen(id)}
-						className="w-6 h-6 flex items-center justify-center hover:bg-gray-200 rounded"
+						className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition-colors"
 						title="Fullscreen"
 					>
 						<ArrowsPointingOutIcon className="w-4 h-4" />
 					</button>
 					<button
 						onClick={() => onClose(id)}
-						className="w-6 h-6 flex items-center justify-center hover:bg-gray-200 rounded"
+						className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
 						title="Close"
 					>
 						<XMarkIcon className="w-4 h-4" />

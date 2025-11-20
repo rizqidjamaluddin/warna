@@ -68,6 +68,7 @@ export interface BaseWindow {
  */
 export interface DebugWindow extends BaseWindow {
 	type: 'debug'
+	name: string
 }
 
 /**

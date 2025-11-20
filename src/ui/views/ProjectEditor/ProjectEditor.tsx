@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
 import type { WindowInstance } from '../../../types'
 import { saveProject } from '../../../utils/db'
-import { Button } from '../../Button'
 import { Input } from '../../Input'
 import { WindowRenderer } from '../../windows/WindowRenderer'
 
@@ -22,6 +21,7 @@ export function ProjectEditor() {
 					x: 100,
 					y: 100,
 					isFullscreen: false,
+					name: 'Debug Window',
 				},
 			]
 
@@ -101,6 +101,28 @@ export function ProjectEditor() {
 
 	function handleAddWindow(newWindow: WindowInstance) {
 		const updatedWindows = [...windows, newWindow]
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+					focusedFullscreenWindowId,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	function handleUpdateWindow(id: string, updates: Partial<WindowInstance>) {
+		const updatedWindows = windows.map((w) => (w.id === id ? { ...w, ...updates } : w))
 
 		const updatedProject = {
 			...currentProject,
@@ -201,75 +223,77 @@ export function ProjectEditor() {
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col">
 			{/* Menu bar - always visible */}
-			<div className="bg-gray-800 text-white px-4 py-2 flex items-center gap-4" style={{ zIndex: 100 }}>
-				<span className="font-semibold">Warna</span>
-				<div className="flex gap-2 text-sm">
-					<button className="hover:bg-gray-700 px-2 py-1 rounded">File</button>
-					<button className="hover:bg-gray-700 px-2 py-1 rounded">Edit</button>
-					<button className="hover:bg-gray-700 px-2 py-1 rounded">View</button>
-				</div>
-			</div>
-
-			<header className="bg-white shadow-sm">
-				<div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<Button variant="ghost" onClick={handleCloseProject}>
-							← Back
-						</Button>
-						{!isEditingName
-							? (
-								<button
-									onClick={() => {
-										setIsEditingName(true)
-										setEditedName(currentProject.metadata.name)
-									}}
-									className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
-								>
-									{currentProject.metadata.name}
-								</button>
-							)
-							: (
-								<div className="flex items-center gap-2">
-									<Input
-										value={editedName}
-										onChange={e => setEditedName(e.target.value)}
-										onKeyDown={(e) => {
-											if (e.key === 'Enter') {
-												void handleSaveName()
-											} else if (e.key === 'Escape') {
-												setIsEditingName(false)
-												setEditedName(currentProject.metadata.name)
-											}
-										}}
-										autoFocus
-										disabled={saving}
-									/>
-									<Button
-										onClick={() => void handleSaveName()}
-										disabled={!editedName.trim() || saving}
-										size="sm"
-									>
-										{saving ? 'Saving...' : 'Save'}
-									</Button>
-									<Button
-										variant="ghost"
-										onClick={() => {
+			<div
+				className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between sticky top-0"
+				style={{ zIndex: 100 }}
+			>
+				<div className="flex items-center gap-4">
+					<button
+						onClick={handleCloseProject}
+						className="hover:bg-gray-700 px-2 py-1 rounded text-sm transition-colors"
+					>
+						← Back
+					</button>
+					<span className="text-gray-400">|</span>
+					{!isEditingName
+						? (
+							<button
+								onClick={() => {
+									setIsEditingName(true)
+									setEditedName(currentProject.metadata.name)
+								}}
+								className="font-semibold hover:text-gray-300 transition-colors"
+							>
+								{currentProject.metadata.name}
+							</button>
+						)
+						: (
+							<div className="flex items-center gap-2">
+								<Input
+									value={editedName}
+									onChange={e => setEditedName(e.target.value)}
+									onKeyDown={(e) => {
+										if (e.key === 'Enter') {
+											void handleSaveName()
+										} else if (e.key === 'Escape') {
 											setIsEditingName(false)
 											setEditedName(currentProject.metadata.name)
-										}}
-										disabled={saving}
-										size="sm"
-									>
-										Cancel
-									</Button>
-								</div>
-							)}
-					</div>
-					<div className="text-sm text-gray-500">
-						Last updated: {new Date(currentProject.metadata.updatedAt).toLocaleString()}
+										}
+									}}
+									autoFocus
+									disabled={saving}
+									className="bg-gray-700 text-white border-gray-600"
+								/>
+								<button
+									onClick={() => void handleSaveName()}
+									disabled={!editedName.trim() || saving}
+									className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm disabled:opacity-50"
+								>
+									{saving ? 'Saving...' : 'Save'}
+								</button>
+								<button
+									onClick={() => {
+										setIsEditingName(false)
+										setEditedName(currentProject.metadata.name)
+									}}
+									disabled={saving}
+									className="px-2 py-1 hover:bg-gray-700 rounded text-sm"
+								>
+									Cancel
+								</button>
+							</div>
+						)}
+					<span className="text-gray-400">|</span>
+					<div className="flex gap-2 text-sm">
+						<button className="hover:bg-gray-700 px-2 py-1 rounded">File</button>
+						<button className="hover:bg-gray-700 px-2 py-1 rounded">Edit</button>
+						<button className="hover:bg-gray-700 px-2 py-1 rounded">View</button>
 					</div>
 				</div>
-			</header>
+				<div className="text-sm text-gray-400">
+					{new Date(currentProject.metadata.updatedAt).toLocaleString()}
+				</div>
+			</div>
 
 			<main className={`${hasFullscreenWindows ? '' : 'max-w-7xl mx-auto px-4 py-8'} flex-1`}>
 				{!hasFullscreenWindows && (
@@ -282,17 +306,19 @@ export function ProjectEditor() {
 						</div>
 					</div>
 				)}
-
-				<WindowRenderer
-					windows={windows}
-					focusedFullscreenWindowId={focusedFullscreenWindowId}
-					onPositionChange={handleWindowPositionChange}
-					onAddWindow={handleAddWindow}
-					onClose={handleCloseWindow}
-					onToggleFullscreen={handleToggleFullscreen}
-					onFocusWindow={handleFocusWindow}
-				/>
 			</main>
+
+			{/* Render windows outside of main to maintain consistent coordinate space */}
+			<WindowRenderer
+				windows={windows}
+				focusedFullscreenWindowId={focusedFullscreenWindowId}
+				onPositionChange={handleWindowPositionChange}
+				onAddWindow={handleAddWindow}
+				onUpdateWindow={handleUpdateWindow}
+				onClose={handleCloseWindow}
+				onToggleFullscreen={handleToggleFullscreen}
+				onFocusWindow={handleFocusWindow}
+			/>
 		</div>
 	)
 }

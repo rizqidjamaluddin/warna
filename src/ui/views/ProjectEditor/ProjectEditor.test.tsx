@@ -71,7 +71,8 @@ describe('ProjectEditor', () => {
 	it('should show last updated timestamp', () => {
 		renderProjectEditor(mockProject)
 
-		expect(screen.getByText(/Last updated:/)).toBeInTheDocument()
+		// Check for the formatted timestamp in the top right
+		expect(screen.getByText(/11\/20\/2025/)).toBeInTheDocument()
 	})
 
 	it('should show input field when project name is clicked', async () => {

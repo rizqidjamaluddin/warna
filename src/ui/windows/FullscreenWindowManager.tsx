@@ -27,9 +27,12 @@ export function FullscreenWindowManager({
 	const activeWindow = windows.find((w) => w.id === activeWindowId) ?? windows[0]
 
 	return (
-		<div className="fixed inset-0 flex flex-col bg-white" style={{ zIndex: 40 }}>
+		<div
+			className="fixed inset-0 flex flex-col bg-white"
+			style={{ zIndex: 40, paddingTop: '42px', isolation: 'isolate' }}
+		>
 			{/* Tab bar */}
-			<div className="flex items-center bg-gray-100 border-b border-gray-200">
+			<div className="flex items-center bg-gray-100 border-b border-gray-200 sticky top-[42px]">
 				{windows.map((window) => (
 					<div
 						key={window.id}
@@ -40,7 +43,7 @@ export function FullscreenWindowManager({
 						onClick={() => onFocusWindow(window.id)}
 					>
 						<span className="text-sm font-medium text-gray-900">
-							{window.type === 'debug' ? 'Debug Window' : 'Window'}
+							{window.type === 'debug' ? window.name : 'Window'}
 						</span>
 						<div className="flex items-center gap-1">
 							<button
@@ -48,7 +51,7 @@ export function FullscreenWindowManager({
 									e.stopPropagation()
 									onToggleFullscreen(window.id)
 								}}
-								className="w-5 h-5 flex items-center justify-center hover:bg-gray-200 rounded"
+								className="w-5 h-5 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded transition-colors"
 								title="Exit Fullscreen"
 							>
 								<ArrowsPointingInIcon className="w-3 h-3" />
@@ -58,7 +61,7 @@ export function FullscreenWindowManager({
 									e.stopPropagation()
 									onClose(window.id)
 								}}
-								className="w-5 h-5 flex items-center justify-center hover:bg-gray-200 rounded"
+								className="w-5 h-5 flex items-center justify-center text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
 								title="Close"
 							>
 								<XMarkIcon className="w-3 h-3" />
