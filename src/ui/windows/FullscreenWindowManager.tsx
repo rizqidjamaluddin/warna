@@ -6,16 +6,18 @@ import type { WindowInstance } from '../../types'
 interface FullscreenWindowManagerProps {
 	windows: WindowInstance[]
 	focusedWindowId?: string
+	menuBarHeight: number
 	onFocusWindow: (id: string) => void
 	onReorderWindows: (windows: WindowInstance[]) => void
 	onClose: (id: string) => void
-	onToggleFullscreen: (id: string) => void
+	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 	children: (window: WindowInstance) => ReactNode
 }
 
 export function FullscreenWindowManager({
 	windows,
 	focusedWindowId,
+	menuBarHeight,
 	onFocusWindow,
 	onReorderWindows,
 	onClose,
@@ -55,6 +57,22 @@ export function FullscreenWindowManager({
 							${window.id === activeWindowId ? 'bg-white' : 'hover:bg-gray-50'}
 						`}
 						onClick={() => onFocusWindow(window.id)}
+						onDrag={(event, info) => {
+							// If dragged down more than 50px, un-fullscreen the window immediately
+							if (info.offset.y > 50) {
+								// Position window so tab bar is centered under cursor
+								const mouseEvent = event as MouseEvent
+								const cursorX = mouseEvent.clientX
+								const cursorY = mouseEvent.clientY
+
+								// Center window horizontally on cursor, nudge up a bit so cursor isn't on the edge
+								// Ensure window doesn't go behind the menu bar
+								const windowX = cursorX - window.width / 2
+								const windowY = Math.max(menuBarHeight, cursorY - 10)
+
+								onToggleFullscreen(window.id, windowX, windowY)
+							}
+						}}
 					>
 						<span className="text-sm font-medium text-gray-900">
 							{window.title || 'Untitled Window'}

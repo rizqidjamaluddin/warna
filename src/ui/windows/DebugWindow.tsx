@@ -12,12 +12,13 @@ interface DebugWindowProps {
 	width: number
 	height: number
 	isFullscreen?: boolean
+	menuBarHeight: number
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onAddWindow: (window: WindowInstance) => void
 	onUpdateWindow: (id: string, updates: Partial<WindowInstance>) => void
 	onClose: (id: string) => void
-	onToggleFullscreen: (id: string) => void
+	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 }
 
 export function DebugWindow({
@@ -28,6 +29,7 @@ export function DebugWindow({
 	width,
 	height,
 	isFullscreen,
+	menuBarHeight,
 	onPositionChange,
 	onResize,
 	onAddWindow,
@@ -94,6 +96,7 @@ export function DebugWindow({
 			width={width}
 			height={height}
 			title={localTitle}
+			menuBarHeight={menuBarHeight}
 			onPositionChange={onPositionChange}
 			onResize={onResize}
 			onClose={onClose}

@@ -10,11 +10,12 @@ interface FloatingWindowProps {
 	width: number
 	height: number
 	title: string
+	menuBarHeight: number
 	children: ReactNode
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onClose: (id: string) => void
-	onToggleFullscreen: (id: string) => void
+	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 }
 
 export function FloatingWindow({
@@ -24,6 +25,7 @@ export function FloatingWindow({
 	width,
 	height,
 	title,
+	menuBarHeight,
 	children,
 	onPositionChange,
 	onResize,
@@ -37,17 +39,26 @@ export function FloatingWindow({
 	const [resizeStartHeight, setResizeStartHeight] = useState(height)
 	const [isResizing, setIsResizing] = useState(false)
 
-	// Menu bar height constant
-	const MENU_BAR_HEIGHT = 42
-
 	// Calculate max dimensions (80% of viewport)
 	const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.8 : 1000
 	const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.8 : 800
+
+	// Calculate drag constraints to prevent dragging off-screen or behind menu bar
+	const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
+	const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 1080
+
+	const dragConstraints = {
+		top: menuBarHeight - y, // Can't go above menu bar
+		left: -x, // Can't go past left edge
+		right: viewportWidth - x - currentWidth, // Can't go past right edge
+		bottom: viewportHeight - y - currentHeight, // Can't go past bottom edge
+	}
 
 	return (
 		<motion.div
 			drag
 			dragControls={dragControls}
+			dragConstraints={dragConstraints}
 			dragMomentum={false}
 			dragElastic={0}
 			dragListener={false}
@@ -65,7 +76,7 @@ export function FloatingWindow({
 			}}
 			onDragEnd={(_event, info) => {
 				const newX = x + info.offset.x
-				const newY = Math.max(MENU_BAR_HEIGHT, y + info.offset.y)
+				const newY = Math.max(menuBarHeight, y + info.offset.y)
 				onPositionChange(id, newX, newY)
 			}}
 			className="bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col"

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
 import type { WindowInstance } from '../../../types'
 import { saveProject } from '../../../utils/db'
@@ -10,6 +10,23 @@ export function ProjectEditor() {
 	const [isEditingName, setIsEditingName] = useState(false)
 	const [editedName, setEditedName] = useState(currentProject?.metadata.name ?? '')
 	const [saving, setSaving] = useState(false)
+	const menuBarRef = useRef<HTMLDivElement>(null)
+	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
+
+	// Measure menu bar height with ResizeObserver for future-proofing
+	useEffect(() => {
+		if (!menuBarRef.current) { return }
+
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				setMenuBarHeight(entry.contentRect.height)
+			}
+		})
+
+		resizeObserver.observe(menuBarRef.current)
+
+		return () => resizeObserver.disconnect()
+	}, [])
 
 	// Initialize windows if not present
 	useEffect(() => {
@@ -225,7 +242,7 @@ export function ProjectEditor() {
 		void saveProject(updatedProject)
 	}
 
-	function handleToggleFullscreen(id: string) {
+	function handleToggleFullscreen(id: string, x?: number, y?: number) {
 		const window = windows.find((w) => w.id === id)
 		if (!window) { return }
 
@@ -241,8 +258,13 @@ export function ProjectEditor() {
 			updatedWindows = [...otherWindows, fullscreenWindow]
 			newFocusedId = id // Focus the newly fullscreened window
 		} else {
-			// Just toggle fullscreen off, maintain position
-			updatedWindows = windows.map((w) => w.id === id ? { ...w, isFullscreen: false } : w)
+			// Toggle fullscreen off, optionally update position
+			const updates: Partial<WindowInstance> = { isFullscreen: false }
+			if (x !== undefined && y !== undefined) {
+				updates.x = x
+				updates.y = y
+			}
+			updatedWindows = windows.map((w) => w.id === id ? { ...w, ...updates } : w)
 
 			// If un-fullscreening the focused window, focus the next or previous one
 			if (focusedFullscreenWindowId === id) {
@@ -340,6 +362,7 @@ export function ProjectEditor() {
 		<div className="min-h-screen bg-gray-50 flex flex-col">
 			{/* Menu bar - always visible */}
 			<div
+				ref={menuBarRef}
 				className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between sticky top-0"
 				style={{ zIndex: 100 }}
 			>
@@ -378,7 +401,7 @@ export function ProjectEditor() {
 									}}
 									autoFocus
 									disabled={saving}
-									className="bg-gray-700 text-white border-gray-600"
+									className=""
 								/>
 								<button
 									onClick={() => void handleSaveName()}
@@ -428,6 +451,7 @@ export function ProjectEditor() {
 			<WindowRenderer
 				windows={windows}
 				focusedFullscreenWindowId={focusedFullscreenWindowId}
+				menuBarHeight={menuBarHeight}
 				onPositionChange={handleWindowPositionChange}
 				onResize={handleWindowResize}
 				onAddWindow={handleAddWindow}

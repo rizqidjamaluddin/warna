@@ -6,19 +6,21 @@ import { FullscreenWindowManager } from './FullscreenWindowManager'
 interface WindowRendererProps {
 	windows: WindowInstance[]
 	focusedFullscreenWindowId?: string
+	menuBarHeight: number
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onAddWindow: (window: WindowInstance) => void
 	onUpdateWindow: (id: string, updates: Partial<WindowInstance>) => void
 	onReorderWindows: (windows: WindowInstance[]) => void
 	onClose: (id: string) => void
-	onToggleFullscreen: (id: string) => void
+	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 	onFocusWindow: (id: string) => void
 }
 
 export function WindowRenderer({
 	windows,
 	focusedFullscreenWindowId,
+	menuBarHeight,
 	onPositionChange,
 	onResize,
 	onAddWindow,
@@ -44,6 +46,7 @@ export function WindowRenderer({
 						width={window.width}
 						height={window.height}
 						isFullscreen={isFullscreen}
+						menuBarHeight={menuBarHeight}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
 						onAddWindow={onAddWindow}
@@ -69,6 +72,7 @@ export function WindowRenderer({
 				<FullscreenWindowManager
 					windows={fullscreenWindows}
 					focusedWindowId={focusedFullscreenWindowId}
+					menuBarHeight={menuBarHeight}
 					onFocusWindow={onFocusWindow}
 					onReorderWindows={onReorderWindows}
 					onClose={onClose}
