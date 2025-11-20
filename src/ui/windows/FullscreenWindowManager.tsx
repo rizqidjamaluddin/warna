@@ -1,4 +1,5 @@
 import { ArrowsPointingInIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Reorder } from 'motion/react'
 import type { ReactNode } from 'react'
 import type { WindowInstance } from '../../types'
 
@@ -6,6 +7,7 @@ interface FullscreenWindowManagerProps {
 	windows: WindowInstance[]
 	focusedWindowId?: string
 	onFocusWindow: (id: string) => void
+	onReorderWindows: (windows: WindowInstance[]) => void
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string) => void
 	children: (window: WindowInstance) => ReactNode
@@ -15,6 +17,7 @@ export function FullscreenWindowManager({
 	windows,
 	focusedWindowId,
 	onFocusWindow,
+	onReorderWindows,
 	onClose,
 	onToggleFullscreen,
 	children,
@@ -32,10 +35,16 @@ export function FullscreenWindowManager({
 			style={{ zIndex: 40, paddingTop: '42px', isolation: 'isolate' }}
 		>
 			{/* Tab bar */}
-			<div className="flex items-center bg-gray-100 border-b border-gray-200 sticky top-[42px]">
+			<Reorder.Group
+				axis="x"
+				values={windows}
+				onReorder={onReorderWindows}
+				className="flex items-center bg-gray-100 border-b border-gray-200 sticky top-[42px]"
+			>
 				{windows.map((window) => (
-					<div
+					<Reorder.Item
 						key={window.id}
+						value={window}
 						className={`
 							flex items-center gap-2 px-4 py-2 border-r border-gray-200 cursor-pointer
 							${window.id === activeWindowId ? 'bg-white' : 'hover:bg-gray-50'}
@@ -67,9 +76,9 @@ export function FullscreenWindowManager({
 								<XMarkIcon className="w-3 h-3" />
 							</button>
 						</div>
-					</div>
+					</Reorder.Item>
 				))}
-			</div>
+			</Reorder.Group>
 
 			{/* Active window content */}
 			<div className="flex-1 overflow-auto p-8">

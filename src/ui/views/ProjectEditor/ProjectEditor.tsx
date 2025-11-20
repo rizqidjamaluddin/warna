@@ -173,11 +173,26 @@ export function ProjectEditor() {
 	}
 
 	function handleToggleFullscreen(id: string) {
-		const updatedWindows = windows.map((w) => w.id === id ? { ...w, isFullscreen: !w.isFullscreen } : w)
-
-		// If making fullscreen, set it as focused
 		const window = windows.find((w) => w.id === id)
-		const newFocusedId = window && !window.isFullscreen ? id : focusedFullscreenWindowId
+		if (!window) { return }
+
+		const isGoingFullscreen = !window.isFullscreen
+
+		let updatedWindows: WindowInstance[]
+		let newFocusedId: string | undefined
+
+		if (isGoingFullscreen) {
+			// Remove from current position and add to end with fullscreen=true
+			const otherWindows = windows.filter((w) => w.id !== id)
+			const fullscreenWindow = { ...window, isFullscreen: true }
+			updatedWindows = [...otherWindows, fullscreenWindow]
+			newFocusedId = id // Focus the newly fullscreened window
+		} else {
+			// Just toggle fullscreen off, maintain position
+			updatedWindows = windows.map((w) => w.id === id ? { ...w, isFullscreen: false } : w)
+			// Clear focus if this was the focused window
+			newFocusedId = focusedFullscreenWindowId === id ? undefined : focusedFullscreenWindowId
+		}
 
 		const updatedProject = {
 			...currentProject,
@@ -210,6 +225,30 @@ export function ProjectEditor() {
 				windowConfig: {
 					windows,
 					focusedFullscreenWindowId: id,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	function handleReorderWindows(reorderedFullscreenWindows: WindowInstance[]) {
+		// Merge reordered fullscreen windows with unchanged floating windows
+		const floatingWindows = windows.filter((w) => !w.isFullscreen)
+		const updatedWindows = [...floatingWindows, ...reorderedFullscreenWindows]
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+					focusedFullscreenWindowId,
 				},
 			},
 		}
@@ -315,6 +354,7 @@ export function ProjectEditor() {
 				onPositionChange={handleWindowPositionChange}
 				onAddWindow={handleAddWindow}
 				onUpdateWindow={handleUpdateWindow}
+				onReorderWindows={handleReorderWindows}
 				onClose={handleCloseWindow}
 				onToggleFullscreen={handleToggleFullscreen}
 				onFocusWindow={handleFocusWindow}
