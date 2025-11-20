@@ -75,6 +75,12 @@ export function FloatingWindow({
 				position: 'fixed',
 				zIndex: isActive ? 70 : 60, // Active window appears on top
 			}}
+			onPointerDown={() => {
+				// Bring to front immediately via z-index
+				onSetActive?.()
+				// Also reorder in array for permanent stacking
+				onPositionChange(id, currentX, currentY)
+			}}
 			className="bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col"
 		>
 			<div className="bg-gray-100 border-b border-gray-200 rounded-t-lg select-none flex items-stretch">
