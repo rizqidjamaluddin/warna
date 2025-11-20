@@ -6,11 +6,14 @@ import { Input } from '../Input'
 
 interface DebugWindowProps {
 	id: string
+	title: string
 	x: number
 	y: number
-	name: string
+	width: number
+	height: number
 	isFullscreen?: boolean
 	onPositionChange: (id: string, x: number, y: number) => void
+	onResize: (id: string, width: number, height: number) => void
 	onAddWindow: (window: WindowInstance) => void
 	onUpdateWindow: (id: string, updates: Partial<WindowInstance>) => void
 	onClose: (id: string) => void
@@ -19,50 +22,55 @@ interface DebugWindowProps {
 
 export function DebugWindow({
 	id,
+	title,
 	x,
 	y,
-	name,
+	width,
+	height,
 	isFullscreen,
 	onPositionChange,
+	onResize,
 	onAddWindow,
 	onUpdateWindow,
 	onClose,
 	onToggleFullscreen,
 }: DebugWindowProps) {
-	const [localName, setLocalName] = useState(name)
+	const [localTitle, setLocalTitle] = useState(title)
 
 	// Sync local state with prop when it changes
 	useEffect(() => {
-		setLocalName(name)
-	}, [name])
+		setLocalTitle(title)
+	}, [title])
 
 	function handleAddWindow() {
 		const newWindow: WindowInstance = {
 			id: crypto.randomUUID(),
 			type: 'debug',
+			title: 'Debug Window',
 			x: x + 30,
 			y: y + 30,
+			width: 300,
+			height: 200,
 			isFullscreen: false,
-			name: 'Debug Window',
 		}
 		onAddWindow(newWindow)
 	}
 
-	function handleNameChange(newName: string) {
-		setLocalName(newName)
-		onUpdateWindow(id, { name: newName })
+	function handleTitleChange(newTitle: string) {
+		setLocalTitle(newTitle)
+		onUpdateWindow(id, { title: newTitle })
 	}
 
 	const content = (
 		<div className="space-y-3">
 			<div>
 				<label className="block text-xs font-medium text-gray-700 mb-1">
-					Window Name
+					Window Title
 				</label>
 				<Input
-					value={localName}
-					onChange={(e) => handleNameChange(e.target.value)}
-					placeholder="Enter window name"
+					value={localTitle}
+					onChange={(e) => handleTitleChange(e.target.value)}
+					placeholder="Enter window title"
 					className="text-sm"
 				/>
 			</div>
@@ -83,8 +91,11 @@ export function DebugWindow({
 			id={id}
 			x={x}
 			y={y}
-			title={localName || 'Debug Window'}
+			width={width}
+			height={height}
+			title={localTitle}
 			onPositionChange={onPositionChange}
+			onResize={onResize}
 			onClose={onClose}
 			onToggleFullscreen={onToggleFullscreen}
 		>

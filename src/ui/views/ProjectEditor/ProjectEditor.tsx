@@ -18,10 +18,12 @@ export function ProjectEditor() {
 				{
 					id: crypto.randomUUID(),
 					type: 'debug',
+					title: 'Debug Window',
 					x: 100,
 					y: 100,
+					width: 300,
+					height: 200,
 					isFullscreen: false,
-					name: 'Debug Window',
 				},
 			]
 
@@ -48,7 +50,17 @@ export function ProjectEditor() {
 		return null
 	}
 
-	const windows: WindowInstance[] = currentProject.data.windowConfig?.windows ?? []
+	// Calculate max dimensions (80% of viewport)
+	const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.8 : 1000
+	const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.8 : 800
+
+	// Ensure all windows have required fields for backwards compatibility and clamp to viewport size
+	const windows: WindowInstance[] = (currentProject.data.windowConfig?.windows ?? []).map((win) => ({
+		...win,
+		title: win.title ?? 'Untitled Window',
+		width: Math.min(win.width ?? 300, maxWidth),
+		height: Math.min(win.height ?? 200, maxHeight),
+	}))
 	const focusedFullscreenWindowId = currentProject.data.windowConfig?.focusedFullscreenWindowId
 
 	async function handleSaveName() {
@@ -91,6 +103,29 @@ export function ProjectEditor() {
 				...currentProject.data,
 				windowConfig: {
 					windows: updatedWindows,
+					focusedFullscreenWindowId,
+				},
+			},
+		}
+
+		setCurrentProject(updatedProject)
+		void saveProject(updatedProject)
+	}
+
+	function handleWindowResize(id: string, width: number, height: number) {
+		const updatedWindows = windows.map((window) => window.id === id ? { ...window, width, height } : window)
+
+		const updatedProject = {
+			...currentProject,
+			metadata: {
+				...currentProject.metadata,
+				updatedAt: Date.now(),
+			},
+			data: {
+				...currentProject.data,
+				windowConfig: {
+					windows: updatedWindows,
+					focusedFullscreenWindowId,
 				},
 			},
 		}
@@ -147,10 +182,28 @@ export function ProjectEditor() {
 		const updatedWindows = windows.filter((w) => w.id !== id)
 		let newFocusedId = focusedFullscreenWindowId
 
-		// If closing the focused fullscreen window, focus the next one
+		// If closing the focused fullscreen window, focus the next or previous one
 		if (focusedFullscreenWindowId === id) {
+			const fullscreenWindows = windows.filter((w) => w.isFullscreen)
+			const currentIndex = fullscreenWindows.findIndex((w) => w.id === id)
 			const remainingFullscreen = updatedWindows.filter((w) => w.isFullscreen)
-			newFocusedId = remainingFullscreen.length > 0 ? remainingFullscreen[0].id : undefined
+
+			if (remainingFullscreen.length > 0) {
+				// Try next tab first, then previous tab
+				const nextIndex = currentIndex
+				const prevIndex = currentIndex - 1
+
+				if (nextIndex < remainingFullscreen.length) {
+					newFocusedId = remainingFullscreen[nextIndex].id
+				} else if (prevIndex >= 0) {
+					newFocusedId = remainingFullscreen[prevIndex].id
+				} else {
+					// Defensive: should never reach here if length > 0
+					newFocusedId = remainingFullscreen[0].id
+				}
+			} else {
+				newFocusedId = undefined
+			}
 		}
 
 		const updatedProject = {
@@ -190,8 +243,32 @@ export function ProjectEditor() {
 		} else {
 			// Just toggle fullscreen off, maintain position
 			updatedWindows = windows.map((w) => w.id === id ? { ...w, isFullscreen: false } : w)
-			// Clear focus if this was the focused window
-			newFocusedId = focusedFullscreenWindowId === id ? undefined : focusedFullscreenWindowId
+
+			// If un-fullscreening the focused window, focus the next or previous one
+			if (focusedFullscreenWindowId === id) {
+				const fullscreenWindows = windows.filter((w) => w.isFullscreen)
+				const currentIndex = fullscreenWindows.findIndex((w) => w.id === id)
+				const remainingFullscreen = updatedWindows.filter((w) => w.isFullscreen)
+
+				if (remainingFullscreen.length > 0) {
+					// Try next tab first, then previous tab
+					const nextIndex = currentIndex
+					const prevIndex = currentIndex - 1
+
+					if (nextIndex < remainingFullscreen.length) {
+						newFocusedId = remainingFullscreen[nextIndex].id
+					} else if (prevIndex >= 0) {
+						newFocusedId = remainingFullscreen[prevIndex].id
+					} else {
+						// Defensive: should never reach here if length > 0
+						newFocusedId = remainingFullscreen[0].id
+					}
+				} else {
+					newFocusedId = undefined
+				}
+			} else {
+				newFocusedId = focusedFullscreenWindowId
+			}
 		}
 
 		const updatedProject = {
@@ -352,6 +429,7 @@ export function ProjectEditor() {
 				windows={windows}
 				focusedFullscreenWindowId={focusedFullscreenWindowId}
 				onPositionChange={handleWindowPositionChange}
+				onResize={handleWindowResize}
 				onAddWindow={handleAddWindow}
 				onUpdateWindow={handleUpdateWindow}
 				onReorderWindows={handleReorderWindows}

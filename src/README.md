@@ -50,4 +50,5 @@ src/engine: project, swatch, and tone management, manipulation, and computing
 src/ui: UI components
 src/utils: general-purpose utilities
 
-Try to refactor and contain files, colocating tests next to them, to prevent code duplication and large files.
+- Try to refactor and contain files, colocating tests next to them, to prevent code duplication and large files.
+- Be careful with data migrations. In general, NEVER MAKE A BREAKING CHANGE to the database structure. Changes should, generally, be additive. If this has to happen, make it extremely clear. Also, treat existing data as potentially broken; have defaults for most values.

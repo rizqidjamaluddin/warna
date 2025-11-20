@@ -52,7 +52,7 @@ export function FullscreenWindowManager({
 						onClick={() => onFocusWindow(window.id)}
 					>
 						<span className="text-sm font-medium text-gray-900">
-							{window.type === 'debug' ? window.name : 'Window'}
+							{window.title || 'Untitled Window'}
 						</span>
 						<div className="flex items-center gap-1">
 							<button

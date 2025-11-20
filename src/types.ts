@@ -58,8 +58,11 @@ export interface ProjectPreferences {
  */
 export interface BaseWindow {
 	id: string
+	title: string
 	x: number
 	y: number
+	width: number
+	height: number
 	isFullscreen: boolean
 }
 
@@ -68,7 +71,6 @@ export interface BaseWindow {
  */
 export interface DebugWindow extends BaseWindow {
 	type: 'debug'
-	name: string
 }
 
 /**

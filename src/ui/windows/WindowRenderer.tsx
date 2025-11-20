@@ -6,6 +6,7 @@ interface WindowRendererProps {
 	windows: WindowInstance[]
 	focusedFullscreenWindowId?: string
 	onPositionChange: (id: string, x: number, y: number) => void
+	onResize: (id: string, width: number, height: number) => void
 	onAddWindow: (window: WindowInstance) => void
 	onUpdateWindow: (id: string, updates: Partial<WindowInstance>) => void
 	onReorderWindows: (windows: WindowInstance[]) => void
@@ -18,6 +19,7 @@ export function WindowRenderer({
 	windows,
 	focusedFullscreenWindowId,
 	onPositionChange,
+	onResize,
 	onAddWindow,
 	onUpdateWindow,
 	onReorderWindows,
@@ -35,11 +37,14 @@ export function WindowRenderer({
 					<DebugWindow
 						key={window.id}
 						id={window.id}
+						title={window.title}
 						x={window.x}
 						y={window.y}
-						name={window.name}
+						width={window.width}
+						height={window.height}
 						isFullscreen={isFullscreen}
 						onPositionChange={onPositionChange}
+						onResize={onResize}
 						onAddWindow={onAddWindow}
 						onUpdateWindow={onUpdateWindow}
 						onClose={onClose}
