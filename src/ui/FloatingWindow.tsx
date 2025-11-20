@@ -84,9 +84,17 @@ export function FloatingWindow({
 						setPanStartX(x)
 						setPanStartY(y)
 					}}
-					onPan={(_event, info) => {
+					onPan={(event, info) => {
 						const newX = panStartX + info.offset.x
 						const newY = panStartY + info.offset.y
+
+						// If dragged up to tab bar area (within 25px), fullscreen the window
+						if (newY < menuBarHeight + 25) {
+							const mouseEvent = event as MouseEvent
+							const cursorX = mouseEvent.clientX
+							onToggleFullscreen(id, cursorX, newY)
+							return
+						}
 
 						// Only constrain top to menu bar, allow off-screen in other directions
 						const constrainedY = Math.max(menuBarHeight, newY)

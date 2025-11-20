@@ -253,19 +253,41 @@ export function ProjectEditor() {
 	}
 
 	function handleToggleFullscreen(id: string, x?: number, y?: number) {
-		const window = windows.find((w) => w.id === id)
-		if (!window) { return }
+		const targetWindow = windows.find((w) => w.id === id)
+		if (!targetWindow) { return }
 
-		const isGoingFullscreen = !window.isFullscreen
+		const isGoingFullscreen = !targetWindow.isFullscreen
 
 		let updatedWindows: WindowInstance[]
 		let newFocusedId: string | undefined
 
 		if (isGoingFullscreen) {
-			// Remove from current position and add to end with fullscreen=true
+			// Remove from current position
 			const otherWindows = windows.filter((w) => w.id !== id)
-			const fullscreenWindow = { ...window, isFullscreen: true }
-			updatedWindows = [...otherWindows, fullscreenWindow]
+			const fullscreenWindow = { ...targetWindow, isFullscreen: true }
+
+			// If cursor X provided, calculate insertion position based on tab position
+			if (x !== undefined) {
+				const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920
+				const fullscreenWindows = otherWindows.filter((w) => w.isFullscreen)
+				const floatingWindows = otherWindows.filter((w) => !w.isFullscreen)
+
+				// Calculate insertion index based on cursor X position (percentage of viewport)
+				const positionRatio = Math.max(0, Math.min(1, x / viewportWidth))
+				const insertIndex = Math.round(positionRatio * fullscreenWindows.length)
+
+				// Insert at calculated position
+				const updatedFullscreen = [
+					...fullscreenWindows.slice(0, insertIndex),
+					fullscreenWindow,
+					...fullscreenWindows.slice(insertIndex),
+				]
+				updatedWindows = [...floatingWindows, ...updatedFullscreen]
+			} else {
+				// No cursor position provided, add to end
+				updatedWindows = [...otherWindows, fullscreenWindow]
+			}
+
 			newFocusedId = id // Focus the newly fullscreened window
 		} else {
 			// Toggle fullscreen off, optionally update position
