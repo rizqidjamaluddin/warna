@@ -3,12 +3,12 @@ import { useProject } from '../../../hooks/useProject'
 import type { WindowInstance } from '../../../types'
 import { saveProject } from '../../../utils/db'
 import { Input } from '../../Input'
+import { Prompt } from '../../Prompt'
 import { WindowRenderer } from '../../windows/WindowRenderer'
 
 export function ProjectEditor() {
 	const { currentProject, setCurrentProject } = useProject()
 	const [isEditingName, setIsEditingName] = useState(false)
-	const [editedName, setEditedName] = useState(currentProject?.metadata.name ?? '')
 	const [saving, setSaving] = useState(false)
 	const menuBarRef = useRef<HTMLDivElement>(null)
 	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
@@ -119,8 +119,8 @@ export function ProjectEditor() {
 	})
 	const focusedFullscreenWindowId = currentProject.data.windowConfig?.focusedFullscreenWindowId
 
-	async function handleSaveName() {
-		if (!editedName.trim() || !currentProject) { return }
+	async function handleSaveName(data: { name: string }) {
+		if (!data.name.trim() || !currentProject) { return }
 
 		try {
 			setSaving(true)
@@ -128,7 +128,7 @@ export function ProjectEditor() {
 				...currentProject,
 				metadata: {
 					...currentProject.metadata,
-					name: editedName.trim(),
+					name: data.name.trim(),
 					updatedAt: Date.now(),
 				},
 			}
@@ -473,54 +473,12 @@ export function ProjectEditor() {
 						← Back
 					</button>
 					<span className="text-gray-400">|</span>
-					{!isEditingName
-						? (
-							<button
-								onClick={() => {
-									setIsEditingName(true)
-									setEditedName(currentProject.metadata.name)
-								}}
-								className="font-semibold hover:text-gray-300 transition-colors"
-							>
-								{currentProject.metadata.name}
-							</button>
-						)
-						: (
-							<div className="flex items-center gap-2">
-								<Input
-									value={editedName}
-									onChange={e => setEditedName(e.target.value)}
-									onKeyDown={(e) => {
-										if (e.key === 'Enter') {
-											void handleSaveName()
-										} else if (e.key === 'Escape') {
-											setIsEditingName(false)
-											setEditedName(currentProject.metadata.name)
-										}
-									}}
-									autoFocus
-									disabled={saving}
-									className=""
-								/>
-								<button
-									onClick={() => void handleSaveName()}
-									disabled={!editedName.trim() || saving}
-									className="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm disabled:opacity-50"
-								>
-									{saving ? 'Saving...' : 'Save'}
-								</button>
-								<button
-									onClick={() => {
-										setIsEditingName(false)
-										setEditedName(currentProject.metadata.name)
-									}}
-									disabled={saving}
-									className="px-2 py-1 hover:bg-gray-700 rounded text-sm"
-								>
-									Cancel
-								</button>
-							</div>
-						)}
+					<button
+						onClick={() => setIsEditingName(true)}
+						className="font-semibold hover:text-gray-300 transition-colors"
+					>
+						{currentProject.metadata.name}
+					</button>
 					<span className="text-gray-400">|</span>
 					<div className="flex gap-2 text-sm">
 						<button className="hover:bg-gray-700 px-2 py-1 rounded">File</button>
@@ -563,6 +521,30 @@ export function ProjectEditor() {
 				onFocusWindow={handleFocusWindow}
 				onBringToFront={handleBringToFront}
 			/>
+
+			{/* Prompt modal for editing project name */}
+			<Prompt<{ name: string }>
+				isOpen={isEditingName}
+				title="Edit Project Name"
+				onSubmit={handleSaveName}
+				onCancel={() => setIsEditingName(false)}
+				isSubmitting={saving}
+			>
+				<div>
+					<label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+						Project Name
+					</label>
+					<Input
+						id="name"
+						name="name"
+						type="text"
+						defaultValue={currentProject.metadata.name}
+						autoFocus
+						required
+						className="w-full"
+					/>
+				</div>
+			</Prompt>
 		</div>
 	)
 }

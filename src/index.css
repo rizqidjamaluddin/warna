@@ -26,3 +26,9 @@ body {
 #root {
 	width: 100%;
 }
+
+/* Disable text selection globally during window resize */
+.disable-selection * {
+	user-select: none !important;
+	-webkit-user-select: none !important;
+}

@@ -156,7 +156,7 @@ export function FloatingWindow({
 				className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize"
 				onPanStart={() => {
 					setIsResizing(true)
-					document.body.style.userSelect = 'none'
+					document.documentElement.classList.add('disable-selection')
 					setResizeStartWidth(currentWidth)
 					setResizeStartHeight(currentHeight)
 				}}
@@ -168,7 +168,7 @@ export function FloatingWindow({
 				}}
 				onPanEnd={() => {
 					setIsResizing(false)
-					document.body.style.userSelect = ''
+					document.documentElement.classList.remove('disable-selection')
 					onResize(id, currentWidth, currentHeight)
 				}}
 			>
