@@ -2,6 +2,7 @@ import { ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
+import { useDisableSelection } from '../hooks/useDisableSelection'
 
 interface FloatingWindowProps {
 	id: string
@@ -46,6 +47,7 @@ export function FloatingWindow({
 	const [resizeStartHeight, setResizeStartHeight] = useState(height)
 	const [isResizing, setIsResizing] = useState(false)
 	const isPanningRef = useRef(false)
+	const { disableSelection, enableSelection } = useDisableSelection()
 
 	// Calculate max dimensions (80% of viewport)
 	const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.8 : 1000
@@ -86,6 +88,7 @@ export function FloatingWindow({
 					className="flex-1 cursor-move px-4 py-2 flex items-center"
 					onPanStart={() => {
 						isPanningRef.current = true
+						disableSelection()
 						// Use props directly to avoid any state sync issues
 						setCurrentX(x)
 						setCurrentY(y)
@@ -101,6 +104,7 @@ export function FloatingWindow({
 							const mouseEvent = event as MouseEvent
 							const cursorX = mouseEvent.clientX
 							onToggleFullscreen(id, cursorX, newY)
+							enableSelection()
 							return
 						}
 
@@ -112,6 +116,7 @@ export function FloatingWindow({
 					}}
 					onPanEnd={() => {
 						isPanningRef.current = false
+						enableSelection()
 						onPositionChange(id, currentX, currentY)
 					}}
 				>
@@ -156,7 +161,7 @@ export function FloatingWindow({
 				className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize"
 				onPanStart={() => {
 					setIsResizing(true)
-					document.documentElement.classList.add('disable-selection')
+					disableSelection()
 					setResizeStartWidth(currentWidth)
 					setResizeStartHeight(currentHeight)
 				}}
@@ -168,7 +173,7 @@ export function FloatingWindow({
 				}}
 				onPanEnd={() => {
 					setIsResizing(false)
-					document.documentElement.classList.remove('disable-selection')
+					enableSelection()
 					onResize(id, currentWidth, currentHeight)
 				}}
 			>

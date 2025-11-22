@@ -1,6 +1,7 @@
 import { ArrowsPointingInIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Reorder } from 'motion/react'
 import React, { type ReactNode } from 'react'
+import { useDisableSelection } from '../../hooks/useDisableSelection'
 import type { WindowInstance } from '../../types'
 
 interface FullscreenWindowManagerProps {
@@ -28,6 +29,7 @@ export function FullscreenWindowManager({
 }: FullscreenWindowManagerProps) {
 	const [tearingOutId, setTearingOutId] = React.useState<string | null>(null)
 	const tabRefs = React.useRef<Map<string, HTMLDivElement>>(new Map())
+	const { disableSelection, enableSelection } = useDisableSelection()
 
 	// Measure and update tab positions
 	React.useEffect(() => {
@@ -86,6 +88,7 @@ export function FullscreenWindowManager({
 						onClick={() => onFocusWindow(window.id)}
 						onDragStart={() => {
 							setTearingOutId(null)
+							disableSelection()
 						}}
 						onDrag={(event, info) => {
 							// If dragged down more than 25px, un-fullscreen the window immediately
@@ -105,6 +108,9 @@ export function FullscreenWindowManager({
 
 								onToggleFullscreen(window.id, windowX, windowY)
 							}
+						}}
+						onDragEnd={() => {
+							enableSelection()
 						}}
 					>
 						<span className="text-sm font-medium text-gray-900">

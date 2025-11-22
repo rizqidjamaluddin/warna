@@ -1,3 +1,4 @@
+import { Menubar } from 'radix-ui'
 import { useEffect, useRef, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
 import type { WindowInstance } from '../../../types'
@@ -14,7 +15,6 @@ export function ProjectEditor() {
 	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
 	const tabPositionsRef = useRef<{ id: string; left: number; right: number }[]>([])
 	const [floatingWindowZOrder, setFloatingWindowZOrder] = useState<string[]>([])
-
 
 	// Measure menu bar height with ResizeObserver for future-proofing
 	useEffect(() => {
@@ -33,7 +33,7 @@ export function ProjectEditor() {
 
 	// Initialize z-order for floating windows
 	useEffect(() => {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const allWindows = currentProject.data.windowConfig?.windows ?? []
 		const floatingWindows = allWindows.filter((w) => !w.isFullscreen)
@@ -42,8 +42,8 @@ export function ProjectEditor() {
 		// Only update if the set of floating windows changed
 		const currentSet = new Set(currentIds)
 		const zOrderSet = new Set(floatingWindowZOrder)
-		const hasChanged = currentIds.length !== floatingWindowZOrder.length ||
-			currentIds.some((id) => !zOrderSet.has(id))
+		const hasChanged = currentIds.length !== floatingWindowZOrder.length
+			|| currentIds.some((id) => !zOrderSet.has(id))
 
 		if (hasChanged) {
 			// Preserve existing order, add new windows to end
@@ -155,7 +155,7 @@ export function ProjectEditor() {
 	}
 
 	function handleWindowPositionChange(id: string, x: number, y: number) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const updatedWindows = windows.map((window) => window.id === id ? { ...window, x, y } : window)
 
@@ -179,7 +179,7 @@ export function ProjectEditor() {
 	}
 
 	function handleWindowResize(id: string, width: number, height: number) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const updatedWindows = windows.map((window) => window.id === id ? { ...window, width, height } : window)
 
@@ -203,7 +203,7 @@ export function ProjectEditor() {
 	}
 
 	function handleAddWindow(newWindow: WindowInstance) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const updatedWindows = [...windows, newWindow]
 
@@ -227,7 +227,7 @@ export function ProjectEditor() {
 	}
 
 	function handleUpdateWindow(id: string, updates: Partial<WindowInstance>) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const updatedWindows = windows.map((w) => (w.id === id ? { ...w, ...updates } : w))
 
@@ -251,7 +251,7 @@ export function ProjectEditor() {
 	}
 
 	function handleCloseWindow(id: string) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const updatedWindows = windows.filter((w) => w.id !== id)
 		let newFocusedId: string | undefined = focusedFullscreenWindowId
@@ -300,7 +300,7 @@ export function ProjectEditor() {
 	}
 
 	function handleToggleFullscreen(id: string, x?: number, y?: number) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const targetWindow = windows.find((w) => w.id === id)
 		if (!targetWindow) { return }
@@ -408,7 +408,7 @@ export function ProjectEditor() {
 	}
 
 	function handleFocusWindow(id: string) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		const updatedProject = {
 			...currentProject,
@@ -430,7 +430,7 @@ export function ProjectEditor() {
 	}
 
 	function handleReorderWindows(reorderedFullscreenWindows: WindowInstance[]) {
-		if (!currentProject) return
+		if (!currentProject) { return }
 
 		// Merge reordered fullscreen windows with unchanged floating windows
 		const floatingWindows = windows.filter((w) => !w.isFullscreen)
@@ -480,11 +480,52 @@ export function ProjectEditor() {
 						{currentProject.metadata.name}
 					</button>
 					<span className="text-gray-400">|</span>
-					<div className="flex gap-2 text-sm">
-						<button className="hover:bg-gray-700 px-2 py-1 rounded">File</button>
-						<button className="hover:bg-gray-700 px-2 py-1 rounded">Edit</button>
-						<button className="hover:bg-gray-700 px-2 py-1 rounded">View</button>
-					</div>
+					<Menubar.Root className="flex gap-1">
+						<Menubar.Menu>
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
+								File
+							</Menubar.Trigger>
+							<Menubar.Portal>
+								<Menubar.Content
+									className="min-w-[220px] bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-[150]"
+									align="start"
+									sideOffset={5}
+								>
+									{/* File menu items will go here */}
+								</Menubar.Content>
+							</Menubar.Portal>
+						</Menubar.Menu>
+
+						<Menubar.Menu>
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
+								Edit
+							</Menubar.Trigger>
+							<Menubar.Portal>
+								<Menubar.Content
+									className="min-w-[220px] bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-[150]"
+									align="start"
+									sideOffset={5}
+								>
+									{/* Edit menu items will go here */}
+								</Menubar.Content>
+							</Menubar.Portal>
+						</Menubar.Menu>
+
+						<Menubar.Menu>
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
+								View
+							</Menubar.Trigger>
+							<Menubar.Portal>
+								<Menubar.Content
+									className="min-w-[220px] bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-[150]"
+									align="start"
+									sideOffset={5}
+								>
+									{/* View menu items will go here */}
+								</Menubar.Content>
+							</Menubar.Portal>
+						</Menubar.Menu>
+					</Menubar.Root>
 				</div>
 				<div className="text-sm text-gray-400">
 					{new Date(currentProject.metadata.updatedAt).toLocaleString()}
