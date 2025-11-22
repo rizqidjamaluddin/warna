@@ -1,6 +1,7 @@
 import { Menubar } from 'radix-ui'
 import { useEffect, useRef, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
+import { useTheme } from '../../../hooks/useTheme'
 import type { WindowInstance } from '../../../types'
 import { createNewProject, saveProject } from '../../../utils/db'
 import { Input } from '../../Input'
@@ -9,6 +10,7 @@ import { WindowRenderer } from '../../windows/WindowRenderer'
 
 export function ProjectEditor() {
 	const { currentProject, setCurrentProject } = useProject()
+	const { theme, setTheme } = useTheme()
 	const [isEditingName, setIsEditingName] = useState(false)
 	const [isCreatingProject, setIsCreatingProject] = useState(false)
 	const [saving, setSaving] = useState(false)
@@ -475,17 +477,17 @@ export function ProjectEditor() {
 	const hasFullscreenWindows = windows.some((w) => w.isFullscreen)
 
 	return (
-		<div className="min-h-screen bg-gray-50 flex flex-col">
+		<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
 			{/* Menu bar - always visible */}
 			<div
 				ref={menuBarRef}
-				className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between sticky top-0"
+				className="bg-gray-800 dark:bg-gray-950 text-white px-4 py-2 flex items-center justify-between sticky top-0"
 				style={{ zIndex: 100 }}
 			>
 				<div className="flex items-center gap-4">
 					<button
 						onClick={handleCloseProject}
-						className="hover:bg-gray-700 px-2 py-1 rounded text-sm transition-colors"
+						className="hover:bg-gray-700 dark:hover:bg-gray-900 px-2 py-1 rounded text-sm transition-colors"
 					>
 						← Back
 					</button>
@@ -499,30 +501,30 @@ export function ProjectEditor() {
 					<span className="text-gray-400">|</span>
 					<Menubar.Root className="flex gap-1">
 						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
 								Project
 							</Menubar.Trigger>
 							<Menubar.Portal>
 								<Menubar.Content
-									className="min-w-[220px] bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-[150]"
+									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
 									align="start"
 									sideOffset={5}
 								>
 									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 text-gray-900"
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
 										onSelect={() => setIsCreatingProject(true)}
 									>
 										New Project...
 									</Menubar.Item>
 									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 text-gray-900"
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
 										onSelect={() => setIsEditingName(true)}
 									>
 										Rename Project...
 									</Menubar.Item>
-									<Menubar.Separator className="h-px bg-gray-200 my-1" />
+									<Menubar.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
 									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 text-gray-900"
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
 										onSelect={handleCloseProject}
 									>
 										Return to Index
@@ -532,12 +534,12 @@ export function ProjectEditor() {
 						</Menubar.Menu>
 
 						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
 								Edit
 							</Menubar.Trigger>
 							<Menubar.Portal>
 								<Menubar.Content
-									className="min-w-[220px] bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-[150]"
+									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
 									align="start"
 									sideOffset={5}
 								>
@@ -547,16 +549,31 @@ export function ProjectEditor() {
 						</Menubar.Menu>
 
 						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
 								View
 							</Menubar.Trigger>
 							<Menubar.Portal>
 								<Menubar.Content
-									className="min-w-[220px] bg-white rounded-lg shadow-lg border border-gray-200 p-1 z-[150]"
+									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
 									align="start"
 									sideOffset={5}
 								>
-									{/* View menu items will go here */}
+									<Menubar.RadioGroup value={theme} onValueChange={(value) => setTheme(value as 'light' | 'dark')}>
+										<Menubar.RadioItem
+											value="light"
+											className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
+										>
+											<span>Light</span>
+											<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
+										</Menubar.RadioItem>
+										<Menubar.RadioItem
+											value="dark"
+											className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
+										>
+											<span>Dark</span>
+											<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
+										</Menubar.RadioItem>
+									</Menubar.RadioGroup>
 								</Menubar.Content>
 							</Menubar.Portal>
 						</Menubar.Menu>
@@ -569,8 +586,8 @@ export function ProjectEditor() {
 
 			<main className={`${hasFullscreenWindows ? '' : 'max-w-7xl mx-auto px-4 py-8'} flex-1`}>
 				{!hasFullscreenWindows && (
-					<div className="bg-white rounded-lg shadow-sm p-8">
-						<div className="text-center text-gray-500">
+					<div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8">
+						<div className="text-center text-gray-500 dark:text-gray-400">
 							<p className="text-lg mb-2">Project Editor</p>
 							<p className="text-sm">
 								Color editing interface will be implemented here.

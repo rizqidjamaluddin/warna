@@ -46,10 +46,10 @@ export function Prompt<T>({
 				animate={{ scale: 1, opacity: 1, y: 0 }}
 				exit={{ scale: 0.95, opacity: 0, y: 20 }}
 				transition={{ duration: 0.2, ease: 'easeOut' }}
-				className="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md"
+				className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 w-full max-w-md"
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
+				<h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{title}</h2>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{children}
 					<div className="flex gap-3 justify-end pt-2">
@@ -57,7 +57,7 @@ export function Prompt<T>({
 							type="button"
 							onClick={onCancel}
 							disabled={isSubmitting}
-							className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+							className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
 						>
 							{cancelLabel}
 						</button>

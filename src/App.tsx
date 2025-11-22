@@ -1,4 +1,5 @@
 import { ProjectProvider, useProject } from './hooks/useProject'
+import { ThemeProvider } from './hooks/useTheme'
 import { ProjectEditor } from './ui/views/ProjectEditor'
 import { ProjectList } from './ui/views/ProjectList'
 
@@ -10,9 +11,11 @@ function AppContent() {
 
 function App() {
 	return (
-		<ProjectProvider>
-			<AppContent />
-		</ProjectProvider>
+		<ThemeProvider>
+			<ProjectProvider>
+				<AppContent />
+			</ProjectProvider>
+		</ThemeProvider>
 	)
 }
 
