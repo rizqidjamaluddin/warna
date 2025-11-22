@@ -2,7 +2,7 @@ import { Menubar } from 'radix-ui'
 import { useEffect, useRef, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
 import type { WindowInstance } from '../../../types'
-import { saveProject } from '../../../utils/db'
+import { createNewProject, saveProject } from '../../../utils/db'
 import { Input } from '../../Input'
 import { Prompt } from '../../Prompt'
 import { WindowRenderer } from '../../windows/WindowRenderer'
@@ -10,6 +10,7 @@ import { WindowRenderer } from '../../windows/WindowRenderer'
 export function ProjectEditor() {
 	const { currentProject, setCurrentProject } = useProject()
 	const [isEditingName, setIsEditingName] = useState(false)
+	const [isCreatingProject, setIsCreatingProject] = useState(false)
 	const [saving, setSaving] = useState(false)
 	const menuBarRef = useRef<HTMLDivElement>(null)
 	const [menuBarHeight, setMenuBarHeight] = useState(42) // Default fallback
@@ -144,6 +145,22 @@ export function ProjectEditor() {
 
 	function handleCloseProject() {
 		setCurrentProject(null)
+	}
+
+	async function handleCreateProject(data: { name: string }) {
+		if (!data.name.trim()) { return }
+
+		try {
+			setSaving(true)
+			const newProject = createNewProject(data.name.trim())
+			await saveProject(newProject)
+			setCurrentProject(newProject)
+			setIsCreatingProject(false)
+		} catch (error) {
+			console.error('Failed to create project:', error)
+		} finally {
+			setSaving(false)
+		}
 	}
 
 	function handleBringToFront(id: string) {
@@ -483,7 +500,7 @@ export function ProjectEditor() {
 					<Menubar.Root className="flex gap-1">
 						<Menubar.Menu>
 							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700">
-								File
+								Project
 							</Menubar.Trigger>
 							<Menubar.Portal>
 								<Menubar.Content
@@ -491,7 +508,25 @@ export function ProjectEditor() {
 									align="start"
 									sideOffset={5}
 								>
-									{/* File menu items will go here */}
+									<Menubar.Item
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 text-gray-900"
+										onSelect={() => setIsCreatingProject(true)}
+									>
+										New Project...
+									</Menubar.Item>
+									<Menubar.Item
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 text-gray-900"
+										onSelect={() => setIsEditingName(true)}
+									>
+										Rename Project...
+									</Menubar.Item>
+									<Menubar.Separator className="h-px bg-gray-200 my-1" />
+									<Menubar.Item
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 text-gray-900"
+										onSelect={handleCloseProject}
+									>
+										Return to Index
+									</Menubar.Item>
 								</Menubar.Content>
 							</Menubar.Portal>
 						</Menubar.Menu>
@@ -580,6 +615,30 @@ export function ProjectEditor() {
 						name="name"
 						type="text"
 						defaultValue={currentProject.metadata.name}
+						autoFocus
+						required
+						className="w-full"
+					/>
+				</div>
+			</Prompt>
+
+			{/* Prompt modal for creating new project */}
+			<Prompt<{ name: string }>
+				isOpen={isCreatingProject}
+				title="Create New Project"
+				onSubmit={handleCreateProject}
+				onCancel={() => setIsCreatingProject(false)}
+				isSubmitting={saving}
+			>
+				<div>
+					<label htmlFor="newName" className="block text-sm font-medium text-gray-700 mb-2">
+						Project Name
+					</label>
+					<Input
+						id="newName"
+						name="name"
+						type="text"
+						placeholder="Enter project name"
 						autoFocus
 						required
 						className="w-full"
