@@ -1,4 +1,5 @@
 import { ProjectMetadata, SavedProject } from '../types'
+import { getPresetById } from '../engine/presets'
 
 const DB_NAME = 'warna-db'
 const DB_VERSION = 1
@@ -90,10 +91,14 @@ export async function deleteProject(id: string): Promise<void> {
 }
 
 /**
- * Creates a new empty project with metadata
+ * Creates a new project with metadata
+ * @param name - The project name
+ * @param presetId - Optional preset ID to initialize the project with colors
  */
-export function createNewProject(name: string): SavedProject {
+export function createNewProject(name: string, presetId?: string): SavedProject {
 	const now = Date.now()
+	const preset = presetId ? getPresetById(presetId) : undefined
+
 	return {
 		metadata: {
 			id: crypto.randomUUID(),
@@ -102,7 +107,7 @@ export function createNewProject(name: string): SavedProject {
 			updatedAt: now,
 		},
 		data: {
-			swatches: {},
+			swatches: preset?.swatches ?? {},
 		},
 	}
 }

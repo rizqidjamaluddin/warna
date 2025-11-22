@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useProject } from '../../../hooks/useProject'
 import type { ProjectMetadata } from '../../../types'
 import { createNewProject, listProjects, loadProject, saveProject } from '../../../utils/db'
+import { getPresetOptions } from '../../../engine/presets'
 import { Button } from '../../Button'
 import { Input } from '../../Input'
 
@@ -9,8 +10,11 @@ export function ProjectList() {
 	const [projects, setProjects] = useState<ProjectMetadata[]>([])
 	const [isCreating, setIsCreating] = useState(false)
 	const [newProjectName, setNewProjectName] = useState('')
+	const [selectedPreset, setSelectedPreset] = useState<string>('')
 	const [loading, setLoading] = useState(true)
 	const { setCurrentProject } = useProject()
+
+	const presetOptions = getPresetOptions()
 
 	useEffect(() => {
 		void loadProjects()
@@ -34,7 +38,8 @@ export function ProjectList() {
 		if (!newProjectName.trim()) { return }
 
 		try {
-			const newProject = createNewProject(newProjectName.trim())
+			const presetId = selectedPreset || undefined
+			const newProject = createNewProject(newProjectName.trim(), presetId)
 			await saveProject(newProject)
 			setCurrentProject(newProject)
 		} catch (error) {
@@ -86,7 +91,7 @@ export function ProjectList() {
 							</Button>
 						)
 						: (
-							<div className="flex gap-3">
+							<div className="space-y-3">
 								<Input
 									placeholder="Project name"
 									value={newProjectName}
@@ -97,23 +102,49 @@ export function ProjectList() {
 										} else if (e.key === 'Escape') {
 											setIsCreating(false)
 											setNewProjectName('')
+											setSelectedPreset('')
 										}
 									}}
 									autoFocus
-									className="flex-1"
 								/>
-								<Button onClick={() => void handleCreateProject()} disabled={!newProjectName.trim()}>
-									Create
-								</Button>
-								<Button
-									variant="ghost"
-									onClick={() => {
-										setIsCreating(false)
-										setNewProjectName('')
-									}}
-								>
-									Cancel
-								</Button>
+								<div>
+									<label htmlFor="preset-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+										Start with a preset (optional)
+									</label>
+									<select
+										id="preset-select"
+										value={selectedPreset}
+										onChange={e => setSelectedPreset(e.target.value)}
+										className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+									>
+										<option value="">Empty project</option>
+										{presetOptions.map(preset => (
+											<option key={preset.id} value={preset.id}>
+												{preset.name}
+											</option>
+										))}
+									</select>
+									{selectedPreset && (
+										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+											{presetOptions.find(p => p.id === selectedPreset)?.description}
+										</p>
+									)}
+								</div>
+								<div className="flex gap-3">
+									<Button onClick={() => void handleCreateProject()} disabled={!newProjectName.trim()}>
+										Create
+									</Button>
+									<Button
+										variant="ghost"
+										onClick={() => {
+											setIsCreating(false)
+											setNewProjectName('')
+											setSelectedPreset('')
+										}}
+									>
+										Cancel
+									</Button>
+								</div>
 							</div>
 						)}
 				</div>

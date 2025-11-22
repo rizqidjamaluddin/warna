@@ -39,7 +39,8 @@ Projects also store user preferences and window configuration to maintain the wo
 ## Main technical features
 
 - Projects are stored using indexDB on the user's browser.
-- Supports RGB, HSL, HSV, and LCH color spaces. Whenever editing in a space other than LCH, convert internally to LCH, but be sure to let inputs that represent the other spaces stay with the user-defined value _unless_ the internal value shifts enough that it needs to change.
+- Use https://culorijs.org/ as the color library.
+- Supports RGB, HSL, and HSV representations, and Oklab color spaces. Whenever editing in a model other than `oklch`, convert internally to `oklch``, but be sure to let inputs that represent the other spaces stay with the user-defined value _unless_ the internal value shifts enough that it needs to change.
 - Designed to work well with tailwind (can easily import and export into the theme format of `color.level`.)
 - Use tests whenever possible to test atomic operations.
 
