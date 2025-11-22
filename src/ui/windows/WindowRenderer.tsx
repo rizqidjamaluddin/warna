@@ -2,6 +2,7 @@ import { AnimatePresence } from 'motion/react'
 import React from 'react'
 import type { WindowInstance } from '../../types'
 import { DebugWindow } from './DebugWindow'
+import { OutputWindow } from './OutputWindow'
 import { FullscreenWindowManager } from './FullscreenWindowManager'
 
 interface WindowRendererProps {
@@ -66,6 +67,26 @@ export function WindowRenderer({
 						onResize={onResize}
 						onAddWindow={onAddWindow}
 						onUpdateWindow={onUpdateWindow}
+						onClose={onClose}
+						onToggleFullscreen={onToggleFullscreen}
+						onBringToFront={() => onBringToFront(window.id)}
+					/>
+				)
+			case 'output':
+				return (
+					<OutputWindow
+						key={window.id}
+						id={window.id}
+						title={window.title}
+						x={window.x}
+						y={window.y}
+						width={window.width}
+						height={window.height}
+						isFullscreen={isFullscreen}
+						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
+						menuBarHeight={menuBarHeight}
+						onPositionChange={onPositionChange}
+						onResize={onResize}
 						onClose={onClose}
 						onToggleFullscreen={onToggleFullscreen}
 						onBringToFront={() => onBringToFront(window.id)}

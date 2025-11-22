@@ -577,6 +577,38 @@ export function ProjectEditor() {
 								</Menubar.Content>
 							</Menubar.Portal>
 						</Menubar.Menu>
+
+						<Menubar.Menu>
+							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
+								Window
+							</Menubar.Trigger>
+							<Menubar.Portal>
+								<Menubar.Content
+									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
+									align="start"
+									sideOffset={5}
+								>
+									<Menubar.Item
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+										onSelect={() => {
+											const newWindow: WindowInstance = {
+												id: crypto.randomUUID(),
+												type: 'output',
+												title: 'Output',
+												x: 150,
+												y: 150,
+												width: 500,
+												height: 400,
+												isFullscreen: false,
+											}
+											handleAddWindow(newWindow)
+										}}
+									>
+										Output
+									</Menubar.Item>
+								</Menubar.Content>
+							</Menubar.Portal>
+						</Menubar.Menu>
 					</Menubar.Root>
 				</div>
 				<div className="text-sm text-gray-400">

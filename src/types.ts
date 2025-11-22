@@ -74,9 +74,16 @@ export interface DebugWindow extends BaseWindow {
 }
 
 /**
+ * Output window that displays project colors as JSON
+ */
+export interface OutputWindow extends BaseWindow {
+	type: 'output'
+}
+
+/**
  * Union of all window types
  */
-export type WindowInstance = DebugWindow
+export type WindowInstance = DebugWindow | OutputWindow
 
 /**
  * Window configuration
