@@ -71,7 +71,7 @@ export function DebugWindow({
 	const content = (
 		<div className="space-y-3">
 			<div>
-				<label className="block text-xs font-medium text-gray-700 mb-1">
+				<label className="block text-xs font-medium mb-1">
 					Window Title
 				</label>
 				<Input
@@ -81,7 +81,7 @@ export function DebugWindow({
 					className="text-sm"
 				/>
 			</div>
-			<div className="text-sm text-gray-700">Hello World</div>
+			<div className="text-sm">Hello World</div>
 			<Button onClick={handleAddWindow} size="sm">
 				Add Window
 			</Button>

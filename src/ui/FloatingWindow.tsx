@@ -83,7 +83,7 @@ export function FloatingWindow({
 			}}
 			className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col"
 		>
-			<div className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 rounded-t-lg select-none flex items-stretch">
+			<div className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-600 rounded-t-lg select-none flex items-stretch">
 				<motion.div
 					className="flex-1 cursor-move px-4 py-2 flex items-center"
 					onPanStart={() => {
@@ -150,7 +150,7 @@ export function FloatingWindow({
 				</div>
 			</div>
 			<div
-				className="p-4 flex-1 overflow-auto"
+				className="rounded-b-lg p-4 flex-1 overflow-auto bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
 				style={{ userSelect: isResizing ? 'none' : 'auto' }}
 			>
 				{children}
