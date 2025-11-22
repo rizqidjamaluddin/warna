@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 export interface Tab {
 	id: string
 	label: string
@@ -8,17 +6,16 @@ export interface Tab {
 
 interface TabsProps {
 	tabs: Tab[]
-	defaultTabId?: string
+	activeTabId: string
+	onActiveTabChange: (tabId: string) => void
 	className?: string
 }
 
 /**
- * Reusable tabs component
+ * Reusable controlled tabs component
  * Displays a tab bar with content area below
  */
-export function Tabs({ tabs, defaultTabId, className = '' }: TabsProps) {
-	const [activeTabId, setActiveTabId] = useState(defaultTabId ?? tabs[0]?.id)
-
+export function Tabs({ tabs, activeTabId, onActiveTabChange, className = '' }: TabsProps) {
 	const activeTab = tabs.find((tab) => tab.id === activeTabId)
 
 	if (tabs.length === 0) {
@@ -32,7 +29,7 @@ export function Tabs({ tabs, defaultTabId, className = '' }: TabsProps) {
 				{tabs.map((tab) => (
 					<button
 						key={tab.id}
-						onClick={() => setActiveTabId(tab.id)}
+						onClick={() => onActiveTabChange(tab.id)}
 						className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
 							activeTabId === tab.id
 								? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-white dark:bg-gray-900'

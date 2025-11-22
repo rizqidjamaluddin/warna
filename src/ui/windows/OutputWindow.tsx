@@ -1,5 +1,6 @@
+import { useEffect, useState } from 'react'
 import { useProject } from '../../hooks/useProject'
-import type { Swatches } from '../../types'
+import type { Swatches, WindowInstance } from '../../types'
 import { FloatingWindow } from '../FloatingWindow'
 import { Tabs, type Tab } from '../Tabs'
 
@@ -16,6 +17,7 @@ interface OutputWindowProps {
 	onBringToFront?: () => void
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
+	onUpdateWindow: (id: string, updates: Partial<WindowInstance>) => void
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 }
@@ -81,11 +83,13 @@ export function OutputWindow({
 	menuBarHeight,
 	onPositionChange,
 	onResize,
+	onUpdateWindow,
 	onClose,
 	onToggleFullscreen,
 	onBringToFront,
 }: OutputWindowProps) {
 	const { currentProject } = useProject()
+	const [activeTabId, setActiveTabId] = useState('json')
 
 	const swatches = currentProject?.data.swatches ?? {}
 
@@ -119,7 +123,21 @@ export function OutputWindow({
 		},
 	]
 
-	const content = <Tabs tabs={tabs} defaultTabId="json" />
+	function handleTabChange(tabId: string) {
+		setActiveTabId(tabId)
+		const tab = tabs.find((t) => t.id === tabId)
+		if (tab) {
+			onUpdateWindow(id, { title: `Output (${tab.label})` })
+		}
+	}
+
+	// Set initial title on mount
+	useEffect(() => {
+		handleTabChange(activeTabId)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
+
+	const content = <Tabs tabs={tabs} activeTabId={activeTabId} onActiveTabChange={handleTabChange} />
 
 	// If fullscreen, just return the content (will be rendered by FullscreenWindowManager)
 	if (isFullscreen) {

@@ -87,6 +87,7 @@ export function WindowRenderer({
 						menuBarHeight={menuBarHeight}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
+						onUpdateWindow={onUpdateWindow}
 						onClose={onClose}
 						onToggleFullscreen={onToggleFullscreen}
 						onBringToFront={() => onBringToFront(window.id)}
