@@ -1,5 +1,5 @@
 import { ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useDisableSelection } from '../hooks/useDisableSelection'
@@ -85,7 +85,7 @@ export function FloatingWindow({
 		>
 			<div className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-600 rounded-t-lg select-none flex items-stretch">
 				<motion.div
-					className="flex-1 cursor-move px-4 py-2 flex items-center"
+					className="flex-1 cursor-move px-4 py-2 flex items-center overflow-hidden"
 					onPanStart={() => {
 						isPanningRef.current = true
 						disableSelection()
@@ -120,8 +120,41 @@ export function FloatingWindow({
 						onPositionChange(id, currentX, currentY)
 					}}
 				>
-					<h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-						{title || 'Untitled Window'}
+					<h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 relative whitespace-nowrap">
+						<AnimatePresence mode="wait" initial={false}>
+							<motion.span
+								key={title}
+								initial={{
+									transform: 'translateY(5px)',
+									opacity: 0,
+									filter: 'blur(4px)',
+								}}
+								animate={{
+									transform: 'translateY(0px)',
+									opacity: 1,
+									filter: 'blur(0px)',
+									transition: {
+										transform: {
+											type: 'spring',
+											duration: 0.7,
+											bounce: 0.5,
+										},
+										default: {
+											ease: 'easeInOut',
+											duration: 0.2,
+										},
+									},
+								}}
+								exit={{
+									transform: 'translateY(-5px)',
+									opacity: 0,
+									filter: 'blur(4px)',
+								}}
+								className="inline-block"
+							>
+								{title || 'Untitled Window'}
+							</motion.span>
+						</AnimatePresence>
 					</h3>
 				</motion.div>
 				<div className="flex items-stretch">

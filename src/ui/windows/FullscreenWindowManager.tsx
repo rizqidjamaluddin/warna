@@ -1,5 +1,5 @@
 import { ArrowsPointingInIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Reorder } from 'motion/react'
+import { AnimatePresence, motion, Reorder } from 'motion/react'
 import React, { type ReactNode } from 'react'
 import { useDisableSelection } from '../../hooks/useDisableSelection'
 import type { WindowInstance } from '../../types'
@@ -113,8 +113,19 @@ export function FullscreenWindowManager({
 							enableSelection()
 						}}
 					>
-						<span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-							{window.title || 'Untitled Window'}
+						<span className="text-sm font-medium text-gray-900 dark:text-gray-100 relative overflow-hidden inline-block whitespace-nowrap">
+							<AnimatePresence mode="wait" initial={false}>
+								<motion.span
+									key={window.title}
+									initial={{ y: 20, opacity: 0, filter: 'blur(4px)' }}
+									animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+									exit={{ y: -20, opacity: 0, filter: 'blur(4px)' }}
+									transition={{ duration: 0.2, ease: 'easeInOut' }}
+									className="inline-block"
+								>
+									{window.title || 'Untitled Window'}
+								</motion.span>
+							</AnimatePresence>
 						</span>
 						<div className="flex items-center gap-1">
 							<button
