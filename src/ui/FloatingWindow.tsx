@@ -13,6 +13,7 @@ interface FloatingWindowProps {
 	title: string
 	zIndex?: number
 	menuBarHeight: number
+	noPadding?: boolean
 	children: ReactNode
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
@@ -30,6 +31,7 @@ export function FloatingWindow({
 	title,
 	zIndex = 60,
 	menuBarHeight,
+	noPadding = false,
 	children,
 	onPositionChange,
 	onResize,
@@ -81,7 +83,7 @@ export function FloatingWindow({
 				// Bring to front immediately (lightweight z-order update)
 				onBringToFront?.()
 			}}
-			className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col"
+			className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
 		>
 			<div className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-600 rounded-t-lg select-none flex items-stretch">
 				<motion.div
@@ -183,7 +185,7 @@ export function FloatingWindow({
 				</div>
 			</div>
 			<div
-				className="rounded-b-lg p-4 flex-1 overflow-auto bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+				className={`flex-1 overflow-auto bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 ${noPadding ? '' : 'p-4'}`}
 				style={{ userSelect: isResizing ? 'none' : 'auto' }}
 			>
 				{children}
@@ -191,7 +193,7 @@ export function FloatingWindow({
 
 			{/* Resize handle */}
 			<motion.div
-				className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize"
+				className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-10"
 				onPanStart={() => {
 					setIsResizing(true)
 					disableSelection()

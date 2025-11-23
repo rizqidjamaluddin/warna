@@ -154,6 +154,7 @@ export function OutputWindow({
 			title={title}
 			zIndex={zIndex}
 			menuBarHeight={menuBarHeight}
+			noPadding={true}
 			onPositionChange={onPositionChange}
 			onResize={onResize}
 			onClose={onClose}
