@@ -1,10 +1,11 @@
-import { ProjectProvider, useProject } from './hooks/useProject'
+import { Provider as JotaiProvider } from 'jotai'
+import { useFullProject } from './hooks/useProjectAtoms'
 import { ThemeProvider } from './hooks/useTheme'
 import { ProjectEditor } from './ui/views/ProjectEditor'
 import { ProjectList } from './ui/views/ProjectList'
 
 function AppContent() {
-	const { currentProject } = useProject()
+	const { currentProject } = useFullProject()
 
 	return currentProject ? <ProjectEditor /> : <ProjectList />
 }
@@ -12,9 +13,9 @@ function AppContent() {
 function App() {
 	return (
 		<ThemeProvider>
-			<ProjectProvider>
+			<JotaiProvider>
 				<AppContent />
-			</ProjectProvider>
+			</JotaiProvider>
 		</ThemeProvider>
 	)
 }

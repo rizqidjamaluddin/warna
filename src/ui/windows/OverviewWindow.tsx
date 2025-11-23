@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useProject } from '../../hooks/useProject'
+import { useSwatchesValue, useSwatchNames, useToneNames, useOverviewGridlines } from '../../hooks/useProjectAtoms'
 import type { WindowInstance } from '../../types'
 import { FloatingWindow } from '../FloatingWindow'
 import { ColorCell } from './overview/ColorCell'
@@ -38,38 +38,13 @@ export function OverviewWindow({
 	onToggleFullscreen,
 	onBringToFront,
 }: OverviewWindowProps) {
-	const { currentProject } = useProject()
+	// Only subscribe to the exact data needed
+	const swatches = useSwatchesValue()
+	const swatchNames = useSwatchNames()
+	const toneNames = useToneNames()
+	const [gridlines] = useOverviewGridlines()
 
-	const swatches = currentProject?.data.swatches ?? {}
-	const gridlines = currentProject?.data.preferences?.overview?.gridlines ?? 'none'
-
-	// Get all unique swatch names and tone names
-	const { swatchNames, toneNames } = useMemo(() => {
-		const swatchNamesSet = new Set<string>()
-		const toneNamesSet = new Set<string>()
-
-		for (const [swatchName, tones] of Object.entries(swatches)) {
-			swatchNamesSet.add(swatchName)
-			for (const toneName of Object.keys(tones)) {
-				toneNamesSet.add(toneName)
-			}
-		}
-
-		// Sort tone names numerically
-		const sortedToneNames = Array.from(toneNamesSet).sort((a, b) => {
-			const numA = parseInt(a, 10)
-			const numB = parseInt(b, 10)
-			if (!isNaN(numA) && !isNaN(numB)) {
-				return numA - numB
-			}
-			return a.localeCompare(b)
-		})
-
-		return {
-			swatchNames: Array.from(swatchNamesSet),
-			toneNames: sortedToneNames,
-		}
-	}, [swatches])
+	// swatchNames and toneNames are already derived atoms, no need to compute here
 
 	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
 		: gridlines === 'white' ? 'border-r border-b border-white'

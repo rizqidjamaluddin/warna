@@ -1,6 +1,8 @@
 import { Menubar } from 'radix-ui'
 import { useEffect, useRef, useState } from 'react'
-import { useProject } from '../../../hooks/useProject'
+import { useAtomValue } from 'jotai'
+import { projectMetadataAtom, windowConfigAtom, preferencesAtom } from '../../../atoms/project'
+import { useFullProject, useUpdateWindowConfig, useUpdatePreferences, useUpdateMetadata } from '../../../hooks/useProjectAtoms'
 import { useTheme } from '../../../hooks/useTheme'
 import type { WindowInstance } from '../../../types'
 import { createNewProject, saveProject } from '../../../utils/db'
@@ -9,7 +11,13 @@ import { Prompt } from '../../Prompt'
 import { WindowRenderer } from '../../windows/WindowRenderer'
 
 export function ProjectEditor() {
-	const { currentProject, setCurrentProject } = useProject()
+	const currentMetadata = useAtomValue(projectMetadataAtom)
+	const windowConfig = useAtomValue(windowConfigAtom)
+	const preferences = useAtomValue(preferencesAtom)
+	const { currentProject, setCurrentProject } = useFullProject()
+	const updateWindowConfig = useUpdateWindowConfig()
+	const updatePreferences = useUpdatePreferences()
+	const updateMetadata = useUpdateMetadata()
 	const { theme, setTheme } = useTheme()
 	const [isEditingName, setIsEditingName] = useState(false)
 	const [isCreatingProject, setIsCreatingProject] = useState(false)
@@ -591,28 +599,15 @@ export function ProjectEditor() {
 													Gridlines
 												</Menubar.Label>
 												<Menubar.RadioGroup
-													value={currentProject.data.preferences?.overview?.gridlines ?? 'none'}
+													value={preferences?.overview?.gridlines ?? 'none'}
 													onValueChange={async (value) => {
-														if (!currentProject) { return }
-														const updatedProject = {
-															...currentProject,
-															metadata: {
-																...currentProject.metadata,
-																updatedAt: Date.now(),
+														await updatePreferences((prefs) => ({
+															...prefs,
+															overview: {
+																...prefs.overview,
+																gridlines: value as 'black' | 'white' | 'none',
 															},
-															data: {
-																...currentProject.data,
-																preferences: {
-																	...currentProject.data.preferences,
-																	overview: {
-																		...currentProject.data.preferences?.overview,
-																		gridlines: value as 'black' | 'white' | 'none',
-																	},
-																},
-															},
-														}
-														await saveProject(updatedProject)
-														setCurrentProject(updatedProject)
+														}))
 													}}
 												>
 													<Menubar.RadioItem

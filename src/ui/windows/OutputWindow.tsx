@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useProject } from '../../hooks/useProject'
+import { useSwatchesValue } from '../../hooks/useProjectAtoms'
 import type { Swatches, WindowInstance } from '../../types'
 import { FloatingWindow } from '../FloatingWindow'
 import { Tabs, type Tab } from '../Tabs'
@@ -88,10 +88,9 @@ export function OutputWindow({
 	onToggleFullscreen,
 	onBringToFront,
 }: OutputWindowProps) {
-	const { currentProject } = useProject()
+	// Only subscribe to swatches
+	const swatches = useSwatchesValue()
 	const [activeTabId, setActiveTabId] = useState('json')
-
-	const swatches = currentProject?.data.swatches ?? {}
 
 	const tabs: Tab[] = [
 		{

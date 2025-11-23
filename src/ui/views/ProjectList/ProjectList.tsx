@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useProject } from '../../../hooks/useProject'
+import { useFullProject } from '../../../hooks/useProjectAtoms'
 import type { ProjectMetadata } from '../../../types'
 import { createNewProject, listProjects, loadProject, saveProject } from '../../../utils/db'
 import { getPresetOptions } from '../../../engine/presets'
@@ -12,7 +12,7 @@ export function ProjectList() {
 	const [newProjectName, setNewProjectName] = useState('')
 	const [selectedPreset, setSelectedPreset] = useState<string>('')
 	const [loading, setLoading] = useState(true)
-	const { setCurrentProject } = useProject()
+	const { setCurrentProject } = useFullProject()
 
 	const presetOptions = getPresetOptions()
 
