@@ -41,6 +41,7 @@ export function OverviewWindow({
 	const { currentProject } = useProject()
 
 	const swatches = currentProject?.data.swatches ?? {}
+	const gridlines = currentProject?.data.preferences?.overview?.gridlines ?? 'none'
 
 	// Get all unique swatch names and tone names
 	const { swatchNames, toneNames } = useMemo(() => {
@@ -70,17 +71,21 @@ export function OverviewWindow({
 		}
 	}, [swatches])
 
+	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
+		: gridlines === 'white' ? 'border-r border-b border-white'
+		: ''
+
 	const content = (
 		<div className="h-full overflow-auto bg-white dark:bg-gray-900">
 			<div className="grid" style={{ gridTemplateColumns: `auto repeat(${toneNames.length}, minmax(80px, 1fr))`, gap: 0 }}>
 				{/* Top-left corner cell */}
-				<div className="sticky top-0 left-0 z-20 bg-gray-200 dark:bg-gray-700 border-r border-b border-gray-300 dark:border-gray-600 p-2 text-sm font-semibold" />
+				<div className={`sticky top-0 left-0 z-20 bg-gray-200 dark:bg-gray-700 p-2 text-sm font-semibold ${gridlineBorder}`} />
 
 				{/* Header row - tone names */}
 				{toneNames.map((toneName) => (
 					<div
 						key={toneName}
-						className="sticky top-0 z-10 bg-gray-200 dark:bg-gray-700 border-r border-b border-gray-300 dark:border-gray-600 p-2 text-center text-sm font-semibold"
+						className={`sticky top-0 z-10 bg-gray-200 dark:bg-gray-700 p-2 text-center text-sm font-semibold ${gridlineBorder}`}
 					>
 						{toneName}
 					</div>
@@ -92,7 +97,7 @@ export function OverviewWindow({
 						{/* Leftmost header cell - swatch name */}
 						<div
 							key={`${swatchName}-header`}
-							className="sticky left-0 z-10 bg-gray-200 dark:bg-gray-700 border-r border-b border-gray-300 dark:border-gray-600 p-2 text-sm font-semibold whitespace-nowrap"
+							className={`sticky left-0 z-10 bg-gray-200 dark:bg-gray-700 p-2 text-sm font-semibold whitespace-nowrap ${gridlineBorder}`}
 						>
 							{swatchName}
 						</div>
@@ -104,6 +109,7 @@ export function OverviewWindow({
 								color={swatches[swatchName]?.[toneName]}
 								swatchName={swatchName}
 								toneName={toneName}
+								gridlines={gridlines}
 							/>
 						))}
 					</>

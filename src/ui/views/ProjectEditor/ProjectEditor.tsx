@@ -574,6 +574,72 @@ export function ProjectEditor() {
 											<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
 										</Menubar.RadioItem>
 									</Menubar.RadioGroup>
+
+									<Menubar.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
+
+									<Menubar.Sub>
+										<Menubar.SubTrigger className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between">
+											Overview
+											<span className="ml-2">›</span>
+										</Menubar.SubTrigger>
+										<Menubar.Portal>
+											<Menubar.SubContent
+												className="min-w-[180px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
+												sideOffset={8}
+											>
+												<Menubar.Label className="text-xs px-3 py-1 text-gray-500 dark:text-gray-400">
+													Gridlines
+												</Menubar.Label>
+												<Menubar.RadioGroup
+													value={currentProject.data.preferences?.overview?.gridlines ?? 'none'}
+													onValueChange={async (value) => {
+														if (!currentProject) { return }
+														const updatedProject = {
+															...currentProject,
+															metadata: {
+																...currentProject.metadata,
+																updatedAt: Date.now(),
+															},
+															data: {
+																...currentProject.data,
+																preferences: {
+																	...currentProject.data.preferences,
+																	overview: {
+																		...currentProject.data.preferences?.overview,
+																		gridlines: value as 'black' | 'white' | 'none',
+																	},
+																},
+															},
+														}
+														await saveProject(updatedProject)
+														setCurrentProject(updatedProject)
+													}}
+												>
+													<Menubar.RadioItem
+														value="black"
+														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
+													>
+														<span>Black</span>
+														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
+													</Menubar.RadioItem>
+													<Menubar.RadioItem
+														value="white"
+														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
+													>
+														<span>White</span>
+														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
+													</Menubar.RadioItem>
+													<Menubar.RadioItem
+														value="none"
+														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
+													>
+														<span>None</span>
+														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
+													</Menubar.RadioItem>
+												</Menubar.RadioGroup>
+											</Menubar.SubContent>
+										</Menubar.Portal>
+									</Menubar.Sub>
 								</Menubar.Content>
 							</Menubar.Portal>
 						</Menubar.Menu>

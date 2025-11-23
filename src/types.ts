@@ -46,11 +46,12 @@ export type Swatches<S extends string = string, T extends string = string> = Rec
 >
 
 /**
- * Project preferences (for future use)
+ * Project preferences
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ProjectPreferences {
-	// To be defined based on user preferences
+	overview?: {
+		gridlines?: 'black' | 'white' | 'none'
+	}
 }
 
 /**
