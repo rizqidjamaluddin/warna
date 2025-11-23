@@ -81,9 +81,16 @@ export interface OutputWindow extends BaseWindow {
 }
 
 /**
+ * Overview window that displays a grid of all colors
+ */
+export interface OverviewWindow extends BaseWindow {
+	type: 'overview'
+}
+
+/**
  * Union of all window types
  */
-export type WindowInstance = DebugWindow | OutputWindow
+export type WindowInstance = DebugWindow | OutputWindow | OverviewWindow
 
 /**
  * Window configuration

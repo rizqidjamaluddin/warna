@@ -593,6 +593,24 @@ export function ProjectEditor() {
 										onSelect={() => {
 											const newWindow: WindowInstance = {
 												id: crypto.randomUUID(),
+												type: 'overview',
+												title: 'Overview',
+												x: 100,
+												y: 100,
+												width: 800,
+												height: 600,
+												isFullscreen: false,
+											}
+											handleAddWindow(newWindow)
+										}}
+									>
+										Overview
+									</Menubar.Item>
+									<Menubar.Item
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+										onSelect={() => {
+											const newWindow: WindowInstance = {
+												id: crypto.randomUUID(),
 												type: 'output',
 												title: 'Output',
 												x: 150,
@@ -605,6 +623,24 @@ export function ProjectEditor() {
 										}}
 									>
 										Output
+									</Menubar.Item>
+									<Menubar.Item
+										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+										onSelect={() => {
+											const newWindow: WindowInstance = {
+												id: crypto.randomUUID(),
+												type: 'debug',
+												title: 'Debug Window',
+												x: 200,
+												y: 200,
+												width: 300,
+												height: 200,
+												isFullscreen: false,
+											}
+											handleAddWindow(newWindow)
+										}}
+									>
+										Debug
 									</Menubar.Item>
 								</Menubar.Content>
 							</Menubar.Portal>
