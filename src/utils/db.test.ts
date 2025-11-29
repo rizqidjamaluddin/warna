@@ -11,9 +11,14 @@ describe('db utilities', () => {
 			expect(project.metadata.id).toBeDefined()
 			expect(project.metadata.createdAt).toBeDefined()
 			expect(project.metadata.updatedAt).toBeDefined()
-			expect(project.data).toEqual({
-				swatches: {},
-			})
+			expect(project.data.swatches).toEqual({})
+
+			// Should have a default full-screened overview window
+			expect(project.data.windowConfig).toBeDefined()
+			expect(project.data.windowConfig?.windows).toHaveLength(1)
+			expect(project.data.windowConfig?.windows[0].type).toBe('overview')
+			expect(project.data.windowConfig?.windows[0].isFullscreen).toBe(true)
+			expect(project.data.windowConfig?.focusedFullscreenWindowId).toBe(project.data.windowConfig?.windows[0].id)
 		})
 
 		it('should create projects with unique IDs', () => {

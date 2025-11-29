@@ -98,6 +98,7 @@ export async function deleteProject(id: string): Promise<void> {
 export function createNewProject(name: string, presetId?: string): SavedProject {
 	const now = Date.now()
 	const preset = presetId ? getPresetById(presetId) : undefined
+	const overviewWindowId = crypto.randomUUID()
 
 	return {
 		metadata: {
@@ -108,6 +109,21 @@ export function createNewProject(name: string, presetId?: string): SavedProject 
 		},
 		data: {
 			swatches: preset?.swatches ?? {},
+			windowConfig: {
+				windows: [
+					{
+						id: overviewWindowId,
+						type: 'overview',
+						title: 'Overview',
+						x: 100,
+						y: 100,
+						width: 800,
+						height: 600,
+						isFullscreen: true,
+					},
+				],
+				focusedFullscreenWindowId: overviewWindowId,
+			},
 		},
 	}
 }

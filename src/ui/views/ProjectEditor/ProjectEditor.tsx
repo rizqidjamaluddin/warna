@@ -68,19 +68,20 @@ export function ProjectEditor() {
 		}
 	}, [currentProject, floatingWindowZOrder])
 
-	// Initialize windows if not present
+	// Initialize windows if not present (for backward compatibility with old projects)
 	useEffect(() => {
 		if (currentProject && !currentProject.data.windowConfig?.windows) {
+			const overviewWindowId = crypto.randomUUID()
 			const initialWindows: WindowInstance[] = [
 				{
-					id: crypto.randomUUID(),
-					type: 'debug',
-					title: 'Debug Window',
+					id: overviewWindowId,
+					type: 'overview',
+					title: 'Overview',
 					x: 100,
 					y: 100,
-					width: 300,
-					height: 200,
-					isFullscreen: false,
+					width: 800,
+					height: 600,
+					isFullscreen: true,
 				},
 			]
 
@@ -94,6 +95,7 @@ export function ProjectEditor() {
 					...currentProject.data,
 					windowConfig: {
 						windows: initialWindows,
+						focusedFullscreenWindowId: overviewWindowId,
 					},
 				},
 			}

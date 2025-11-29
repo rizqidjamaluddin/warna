@@ -1,5 +1,5 @@
+import { Provider } from 'jotai'
 import { describe, expect, it, vi } from 'vitest'
-import { ProjectProvider } from '../../../hooks/useProject'
 import { render, screen, userEvent, waitFor } from '../../../test/utils'
 import { ProjectList } from './ProjectList'
 
@@ -50,9 +50,9 @@ vi.mock('../../../utils/db', () => ({
 
 function renderProjectList() {
 	return render(
-		<ProjectProvider>
+		<Provider>
 			<ProjectList />
-		</ProjectProvider>,
+		</Provider>,
 	)
 }
 
