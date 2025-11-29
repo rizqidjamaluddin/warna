@@ -1,14 +1,13 @@
+import type { Oklch } from 'culori'
+
 /**
- * LCH color representation (Lightness, Chroma, Hue)
- * - l: Lightness (0-100)
+ * We use Culori's Oklch type for all color representations
+ * - mode: 'oklch'
+ * - l: Lightness (0-1)
  * - c: Chroma (0+)
  * - h: Hue (0-360)
  */
-export interface LCHColor {
-	l: number
-	c: number
-	h: number
-}
+export type LCHColor = Oklch
 
 /**
  * RGB color representation

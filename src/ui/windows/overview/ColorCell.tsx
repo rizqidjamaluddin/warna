@@ -1,5 +1,5 @@
-import { formatHex, oklch } from 'culori'
 import type { LCHColor } from '../../../types'
+import { toHex, getContrastTextColor } from '../../../utils/color'
 
 interface ColorCellProps {
 	color: LCHColor | undefined
@@ -21,13 +21,17 @@ export function ColorCell({ color, swatchName, toneName, gridlines }: ColorCellP
 		)
 	}
 
-	const backgroundColor = formatHex(oklch(color))
+	const backgroundColor = toHex(color)
+	const textColor = getContrastTextColor(color)
+	const colorName = `${swatchName}.${toneName}`
 
 	return (
 		<div
-			className={`p-2 min-h-[60px] ${gridlineBorder}`}
-			style={{ backgroundColor }}
+			className={`p-2 min-h-[60px] flex items-center justify-center text-xs font-medium ${gridlineBorder}`}
+			style={{ backgroundColor, color: textColor }}
 			title={`${swatchName}-${toneName}`}
-		/>
+		>
+			{colorName}
+		</div>
 	)
 }
