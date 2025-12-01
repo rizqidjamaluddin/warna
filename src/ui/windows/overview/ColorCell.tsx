@@ -1,17 +1,16 @@
-import { useAtomValue } from 'jotai'
 import type { LCHColor } from '../../../types'
+import type { VisionType } from '../../../atoms/ui'
 import { toHex, getContrastTextColor, applyVisionSimulation } from '../../../utils/color'
-import { visionTypeAtom } from '../../../atoms/ui'
 
 interface ColorCellProps {
 	color: LCHColor | undefined
 	swatchName: string
 	toneName: string
 	gridlines: 'black' | 'white' | 'none'
+	visionType: VisionType
 }
 
-export function ColorCell({ color, swatchName, toneName, gridlines }: ColorCellProps) {
-	const visionType = useAtomValue(visionTypeAtom)
+export function ColorCell({ color, swatchName, toneName, gridlines, visionType }: ColorCellProps) {
 	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
 		: gridlines === 'white' ? 'border-r border-b border-white'
 		: ''

@@ -6,7 +6,6 @@ import {
 	swatchesAtom,
 	preferencesAtom,
 	windowConfigAtom,
-	overviewGridlinesAtom,
 	focusedFullscreenWindowIdAtom,
 	swatchNamesAtom,
 	toneNamesAtom,
@@ -44,11 +43,6 @@ export function usePreferences() {
 // Hook for window config
 export function useWindowConfig() {
 	return useAtom(windowConfigAtom)
-}
-
-// Hook for overview gridlines specifically
-export function useOverviewGridlines() {
-	return useAtom(overviewGridlinesAtom)
 }
 
 // Hook for focused fullscreen window

@@ -1,8 +1,7 @@
 import { Menubar } from 'radix-ui'
 import { useEffect, useRef, useState } from 'react'
-import { useAtomValue, useAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import { projectMetadataAtom, windowConfigAtom, preferencesAtom } from '../../../atoms/project'
-import { visionTypeAtom, type VisionType } from '../../../atoms/ui'
 import { useFullProject, useUpdateWindowConfig, useUpdatePreferences, useUpdateMetadata } from '../../../hooks/useProjectAtoms'
 import { useTheme } from '../../../hooks/useTheme'
 import type { WindowInstance } from '../../../types'
@@ -20,7 +19,6 @@ export function ProjectEditor() {
 	const updatePreferences = useUpdatePreferences()
 	const updateMetadata = useUpdateMetadata()
 	const { theme, setTheme } = useTheme()
-	const [visionType, setVisionType] = useAtom(visionTypeAtom)
 	const [isEditingName, setIsEditingName] = useState(false)
 	const [isCreatingProject, setIsCreatingProject] = useState(false)
 	const [saving, setSaving] = useState(false)
@@ -587,132 +585,6 @@ export function ProjectEditor() {
 										</Menubar.RadioItem>
 									</Menubar.RadioGroup>
 
-									<Menubar.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
-
-									<Menubar.Sub>
-										<Menubar.SubTrigger className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between">
-											Overview
-											<span className="ml-2">›</span>
-										</Menubar.SubTrigger>
-										<Menubar.Portal>
-											<Menubar.SubContent
-												className="min-w-[180px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
-												sideOffset={8}
-											>
-												<Menubar.Label className="text-xs px-3 py-1 text-gray-500 dark:text-gray-400">
-													Gridlines
-												</Menubar.Label>
-												<Menubar.RadioGroup
-													value={preferences?.overview?.gridlines ?? 'none'}
-													onValueChange={async (value) => {
-														await updatePreferences((prefs) => ({
-															...prefs,
-															overview: {
-																...prefs.overview,
-																gridlines: value as 'black' | 'white' | 'none',
-															},
-														}))
-													}}
-												>
-													<Menubar.RadioItem
-														value="black"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Black</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="white"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>White</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="none"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>None</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-												</Menubar.RadioGroup>
-
-												<Menubar.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
-
-												<Menubar.Label className="text-xs px-3 py-1 text-gray-500 dark:text-gray-400">
-													Vision Simulation
-												</Menubar.Label>
-												<Menubar.RadioGroup
-													value={visionType}
-													onValueChange={(value) => setVisionType(value as VisionType)}
-												>
-													<Menubar.RadioItem
-														value="normal"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Normal Vision</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="protanopia"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Protanopia (Red-blind)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="deuteranopia"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Deuteranopia (Green-blind)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="tritanopia"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Tritanopia (Blue-blind)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="protanomaly"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Protanomaly (Red-weak)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="deuteranomaly"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Deuteranomaly (Green-weak)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="tritanomaly"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Tritanomaly (Blue-weak)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="achromatopsia"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Achromatopsia (Monochrome)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-													<Menubar.RadioItem
-														value="achromatomaly"
-														className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-													>
-														<span>Achromatomaly (Near-monochrome)</span>
-														<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-													</Menubar.RadioItem>
-												</Menubar.RadioGroup>
-											</Menubar.SubContent>
-										</Menubar.Portal>
-									</Menubar.Sub>
 								</Menubar.Content>
 							</Menubar.Portal>
 						</Menubar.Menu>

@@ -8,21 +8,6 @@ export const swatchesAtom = atom<Swatches>({})
 export const preferencesAtom = atom<ProjectPreferences>({})
 export const windowConfigAtom = atom<WindowConfig | undefined>(undefined)
 
-// Derived atoms for specific preference access
-export const overviewGridlinesAtom = atom(
-	(get) => get(preferencesAtom).overview?.gridlines ?? 'none',
-	(get, set, newValue: 'black' | 'white' | 'none') => {
-		const prefs = get(preferencesAtom)
-		set(preferencesAtom, {
-			...prefs,
-			overview: {
-				...prefs.overview,
-				gridlines: newValue,
-			},
-		})
-	},
-)
-
 // Derived atom for focused fullscreen window
 export const focusedFullscreenWindowIdAtom = atom(
 	(get) => get(windowConfigAtom)?.focusedFullscreenWindowId,

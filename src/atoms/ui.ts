@@ -1,5 +1,3 @@
-import { atom } from 'jotai'
-
 /**
  * Vision simulation types for accessibility testing
  * These simulate different types of color vision deficiencies
@@ -14,9 +12,3 @@ export type VisionType =
 	| 'tritanomaly' // Blue-weak
 	| 'achromatopsia' // Complete color blindness (monochrome)
 	| 'achromatomaly' // Incomplete color blindness
-
-/**
- * Global UI state for vision simulation
- * This is NOT persisted and resets on refresh
- */
-export const visionTypeAtom = atom<VisionType>('normal')

@@ -48,9 +48,7 @@ export type Swatches<S extends string = string, T extends string = string> = Rec
  * Project preferences
  */
 export interface ProjectPreferences {
-	overview?: {
-		gridlines?: 'black' | 'white' | 'none'
-	}
+	// Reserved for future preferences
 }
 
 /**
