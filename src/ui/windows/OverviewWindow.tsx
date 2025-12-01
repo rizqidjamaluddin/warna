@@ -99,13 +99,13 @@ export function OverviewWindow({
 			<div className="flex-1 overflow-auto">
 				<div className="grid" style={{ gridTemplateColumns: `auto repeat(${toneNames.length}, minmax(80px, 1fr))`, gap: 0 }}>
 					{/* Top-left corner cell */}
-					<div className={`sticky top-0 left-0 z-20 bg-gray-200 dark:bg-gray-700 p-2 text-sm font-semibold ${gridlineBorder}`} />
+					<div className={`sticky top-0 left-0 z-20 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur p-2 text-sm font-semibold ${gridlineBorder}`} />
 
 					{/* Header row - tone names */}
 					{toneNames.map((toneName) => (
 						<div
 							key={toneName}
-							className={`sticky top-0 z-10 bg-gray-200 dark:bg-gray-700 p-2 text-center text-sm font-semibold ${gridlineBorder}`}
+							className={`sticky top-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-center text-sm font-semibold flex items-center justify-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder}`}
 						>
 							{toneName}
 						</div>
@@ -117,7 +117,7 @@ export function OverviewWindow({
 							{/* Leftmost header cell - swatch name */}
 							<div
 								key={`${swatchName}-header`}
-								className={`sticky left-0 z-10 bg-gray-200 dark:bg-gray-700 p-2 text-sm font-semibold whitespace-nowrap ${gridlineBorder}`}
+								className={`sticky left-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-sm font-semibold whitespace-nowrap flex items-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder}`}
 							>
 								{swatchName}
 							</div>
