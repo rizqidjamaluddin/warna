@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useSwatchesValue, useSwatchNames, useToneNames } from '../../hooks/useProjectAtoms'
-import type { WindowInstance } from '../../types'
+import type { WindowInstance, OverviewWindow as OverviewWindowType } from '../../types'
 import type { VisionType } from '../../atoms/ui'
 import { FloatingWindow } from '../FloatingWindow'
 import { ColorCell } from './overview/ColorCell'
@@ -15,6 +14,10 @@ interface OverviewWindowProps {
 	isFullscreen?: boolean
 	menuBarHeight: number
 	zIndex?: number
+	viewOptions?: {
+		gridlines?: 'black' | 'white' | 'none'
+		visionType?: VisionType
+	}
 	onBringToFront?: () => void
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
@@ -33,20 +36,21 @@ export function OverviewWindow({
 	isFullscreen,
 	zIndex,
 	menuBarHeight,
+	viewOptions,
 	onPositionChange,
 	onResize,
 	onClose,
 	onToggleFullscreen,
 	onBringToFront,
+	onUpdateWindow,
 }: OverviewWindowProps) {
 	// Only subscribe to the exact data needed
 	const swatches = useSwatchesValue()
 	const swatchNames = useSwatchNames()
 	const toneNames = useToneNames()
 
-	// Local state for this window instance
-	const [gridlines, setGridlines] = useState<'black' | 'white' | 'none'>('none')
-	const [visionType, setVisionType] = useState<VisionType>('normal')
+	const gridlines = viewOptions?.gridlines ?? 'none'
+	const visionType = viewOptions?.visionType ?? 'normal'
 
 	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
 		: gridlines === 'white' ? 'border-r border-b border-white'
@@ -63,7 +67,9 @@ export function OverviewWindow({
 					<select
 						id={`gridlines-${id}`}
 						value={gridlines}
-						onChange={(e) => setGridlines(e.target.value as 'black' | 'white' | 'none')}
+						onChange={(e) => onUpdateWindow(id, {
+							viewOptions: { ...viewOptions, gridlines: e.target.value as 'black' | 'white' | 'none' }
+						})}
 						className="text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
 					>
 						<option value="none">None</option>
@@ -79,7 +85,9 @@ export function OverviewWindow({
 					<select
 						id={`vision-${id}`}
 						value={visionType}
-						onChange={(e) => setVisionType(e.target.value as VisionType)}
+						onChange={(e) => onUpdateWindow(id, {
+							viewOptions: { ...viewOptions, visionType: e.target.value as VisionType }
+						})}
 						className="text-sm px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
 					>
 						<option value="normal">Normal</option>

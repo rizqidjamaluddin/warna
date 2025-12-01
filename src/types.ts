@@ -83,6 +83,10 @@ export interface OutputWindow extends BaseWindow {
  */
 export interface OverviewWindow extends BaseWindow {
 	type: 'overview'
+	viewOptions?: {
+		gridlines?: 'black' | 'white' | 'none'
+		visionType?: 'normal' | 'protanopia' | 'deuteranopia' | 'tritanopia' | 'protanomaly' | 'deuteranomaly' | 'tritanomaly' | 'achromatopsia' | 'achromatomaly'
+	}
 }
 
 /**

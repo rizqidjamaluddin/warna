@@ -107,6 +107,7 @@ export function WindowRenderer({
 						isFullscreen={isFullscreen}
 						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
 						menuBarHeight={menuBarHeight}
+						viewOptions={window.viewOptions}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
 						onUpdateWindow={onUpdateWindow}
