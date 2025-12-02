@@ -3,6 +3,7 @@ import type { WindowInstance, OverviewWindow as OverviewWindowType } from '../..
 import type { VisionType } from '../../atoms/ui'
 import { FloatingWindow } from '../FloatingWindow'
 import { ColorCell } from './overview/ColorCell'
+import { BrightnessChart } from './overview/BrightnessChart'
 
 interface OverviewWindowProps {
 	id: string
@@ -105,7 +106,7 @@ export function OverviewWindow({
 
 			{/* Grid */}
 			<div className="flex-1 overflow-auto">
-				<div className="grid" style={{ gridTemplateColumns: `auto repeat(${toneNames.length}, minmax(80px, 1fr))`, gap: 0 }}>
+				<div className="grid" style={{ gridTemplateColumns: `auto repeat(${toneNames.length}, minmax(80px, 1fr)) auto`, gap: 0 }}>
 					{/* Top-left corner cell */}
 					<div className={`sticky top-0 left-0 z-20 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur p-2 text-sm font-semibold ${gridlineBorder}`} />
 
@@ -118,6 +119,13 @@ export function OverviewWindow({
 							{toneName}
 						</div>
 					))}
+
+					{/* Header cell for brightness chart */}
+					<div
+						className={`sticky top-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-center text-sm font-semibold flex items-center justify-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder}`}
+					>
+						Brightness
+					</div>
 
 					{/* Data rows */}
 					{swatchNames.map((swatchName) => (
@@ -141,6 +149,14 @@ export function OverviewWindow({
 									visionType={visionType}
 								/>
 							))}
+
+							{/* Brightness chart */}
+							<BrightnessChart
+								key={`${swatchName}-chart`}
+								tones={swatches[swatchName] ?? {}}
+								toneNames={toneNames}
+								gridlines={gridlines}
+							/>
 						</>
 					))}
 				</div>
