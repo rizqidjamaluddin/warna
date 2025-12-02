@@ -45,8 +45,11 @@ export function Chart({
 		return (
 			<div
 				className={`bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 ${
-					gridlines === 'black' ? 'border-r border-b border-black' :
-					gridlines === 'white' ? 'border-r border-b border-white' : ''
+					gridlines === 'black'
+						? 'border-r border-b border-black'
+						: gridlines === 'white'
+						? 'border-r border-b border-white'
+						: ''
 				}`}
 				style={{ width, height }}
 			>
@@ -76,8 +79,10 @@ export function Chart({
 		return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
 	}).join(' ')
 
-	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
-		: gridlines === 'white' ? 'border-r border-b border-white'
+	const gridlineBorder = gridlines === 'black'
+		? 'border-r border-b border-black'
+		: gridlines === 'white'
+		? 'border-r border-b border-white'
 		: ''
 
 	return (
@@ -156,7 +161,7 @@ export function Chart({
 								cx={cx}
 								cy={cy}
 								r="4"
-								fill={d.color || pointColor}
+								fill={d.color ?? pointColor}
 								stroke="white"
 								strokeWidth="1"
 							/>
