@@ -17,6 +17,8 @@ interface ChartProps {
 	lineColor?: string
 	pointColor?: string
 	maxDataPoints?: number
+	yMin?: number
+	yMax?: number
 }
 
 export function Chart({
@@ -31,6 +33,8 @@ export function Chart({
 	lineColor = 'rgb(59, 130, 246)', // blue-500
 	pointColor = 'rgb(37, 99, 235)', // blue-600
 	maxDataPoints = 20,
+	yMin = 0,
+	yMax = 1,
 }: ChartProps) {
 	const padding = {
 		top: 10,
@@ -43,32 +47,64 @@ export function Chart({
 
 	if (data.length === 0) {
 		return (
-			<div
-				className={`bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 ${
-					gridlines === 'black'
-						? 'border-r border-b border-black'
-						: gridlines === 'white'
-						? 'border-r border-b border-white'
-						: ''
-				}`}
-				style={{ width, height }}
-			>
-				No data
-			</div>
+			<svg width={width} height={height}>
+				{/* Background */}
+				<rect
+					width={width}
+					height={height}
+					className="fill-gray-100 dark:fill-gray-800"
+				/>
+				{/* Borders */}
+				{gridlines !== 'none' && (
+					<>
+						<line
+							x1={width}
+							y1={0}
+							x2={width}
+							y2={height}
+							className={gridlines === 'black' ? 'stroke-black' : 'stroke-white'}
+							strokeWidth="1"
+						/>
+						<line
+							x1={0}
+							y1={height}
+							x2={width}
+							y2={height}
+							className={gridlines === 'black' ? 'stroke-black' : 'stroke-white'}
+							strokeWidth="1"
+						/>
+					</>
+				)}
+				{/* "No data" text */}
+				<text
+					x={width / 2}
+					y={height / 2}
+					textAnchor="middle"
+					alignmentBaseline="middle"
+					className="fill-gray-500 dark:fill-gray-400"
+					style={{ fontSize: '12px' }}
+				>
+					No data
+				</text>
+			</svg>
 		)
 	}
 
 	// Calculate positions
 	const xScale = (index: number) => padding.left + (index / (maxDataPoints - 1)) * chartWidth
-	const yScale = (value: number) => padding.top + (1 - value) * chartHeight
+	const yScale = (value: number) => {
+		const normalized = (value - yMin) / (yMax - yMin)
+		return padding.top + (1 - normalized) * chartHeight
+	}
 
 	// Generate gridlines (5 horizontal lines)
 	const gridlineCount = 5
 	const gridlinePositions = Array.from({ length: gridlineCount }, (_, i) => {
-		const value = i / (gridlineCount - 1)
+		const normalized = i / (gridlineCount - 1)
+		const actualValue = yMin + normalized * (yMax - yMin)
 		return {
-			y: yScale(value),
-			label: value.toFixed(1),
+			y: yScale(actualValue),
+			label: actualValue.toFixed(2),
 		}
 	})
 
@@ -79,18 +115,14 @@ export function Chart({
 		return `${i === 0 ? 'M' : 'L'} ${x} ${y}`
 	}).join(' ')
 
-	const gridlineBorder = gridlines === 'black'
-		? 'border-r border-b border-black'
-		: gridlines === 'white'
-		? 'border-r border-b border-white'
-		: ''
-
 	return (
-		<div
-			className={`bg-gray-50 dark:bg-gray-900 flex items-center justify-center ${gridlineBorder}`}
-			style={{ width, height }}
-		>
-			<svg width={width} height={height} className="overflow-visible">
+		<svg width={width} height={height}>
+			{/* Background */}
+			<rect
+				width={width}
+				height={height}
+				className="fill-gray-50 dark:fill-gray-900"
+			/>
 				{/* Gridlines */}
 				{gridlinePositions.map((pos, i) => (
 					<line
@@ -195,7 +227,28 @@ export function Chart({
 						{yAxisLabel}
 					</text>
 				)}
-			</svg>
-		</div>
+
+			{/* Borders */}
+			{gridlines !== 'none' && (
+				<>
+					<line
+						x1={width}
+						y1={0}
+						x2={width}
+						y2={height}
+						className={gridlines === 'black' ? 'stroke-black' : 'stroke-white'}
+						strokeWidth="1"
+					/>
+					<line
+						x1={0}
+						y1={height}
+						x2={width}
+						y2={height}
+						className={gridlines === 'black' ? 'stroke-black' : 'stroke-white'}
+						strokeWidth="1"
+					/>
+				</>
+			)}
+		</svg>
 	)
 }

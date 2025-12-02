@@ -6,22 +6,17 @@ interface ChromaChartProps {
 	tones: Record<string, LCHColor | undefined>
 	toneNames: string[]
 	gridlines: 'black' | 'white' | 'none'
+	maxChroma: number
 }
 
-export function ChromaChart({ tones, toneNames, gridlines }: ChromaChartProps) {
-	// Find the max chroma value to normalize the chart
-	const maxChroma = Math.max(
-		...toneNames.map((toneName) => tones[toneName]?.c ?? 0),
-		0.3, // Minimum max to avoid division by zero and ensure reasonable scale
-	)
-
-	// Extract chroma values for each tone
+export function ChromaChart({ tones, toneNames, gridlines, maxChroma }: ChromaChartProps) {
+	// Extract absolute chroma values for each tone (no normalization!)
 	const data = toneNames
 		.map((toneName, index) => {
 			const color = tones[toneName]
 			return {
 				index,
-				value: color !== undefined ? color.c / maxChroma : null, // Normalize to 0-1 range (0 is valid!)
+				value: color !== undefined ? color.c : null, // Use absolute chroma value
 				color: color ? toHex(color) : null,
 				label: toneName,
 			}
@@ -38,10 +33,12 @@ export function ChromaChart({ tones, toneNames, gridlines }: ChromaChartProps) {
 			data={data}
 			gridlines={gridlines}
 			showAxisLabels={false}
-			showYAxisValues={false}
+			showYAxisValues={true}
 			xAxisLabel="Tone"
 			yAxisLabel="Chroma"
 			maxDataPoints={toneNames.length}
+			yMin={0}
+			yMax={maxChroma}
 		/>
 	)
 }

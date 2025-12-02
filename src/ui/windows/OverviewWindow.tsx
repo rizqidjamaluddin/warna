@@ -54,6 +54,14 @@ export function OverviewWindow({
 	const gridlines = viewOptions?.gridlines ?? 'none'
 	const visionType = viewOptions?.visionType ?? 'normal'
 
+	// Calculate global max chroma across all swatches for consistent chart scaling
+	const maxChroma = Math.max(
+		...swatchNames.flatMap(swatchName =>
+			toneNames.map(toneName => swatches[swatchName]?.[toneName]?.c ?? 0)
+		),
+		0.3 // Minimum to ensure reasonable scale
+	)
+
 	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
 		: gridlines === 'white' ? 'border-r border-b border-white'
 		: ''
@@ -172,6 +180,7 @@ export function OverviewWindow({
 								tones={swatches[swatchName] ?? {}}
 								toneNames={toneNames}
 								gridlines={gridlines}
+								maxChroma={maxChroma}
 							/>
 						</>
 					))}

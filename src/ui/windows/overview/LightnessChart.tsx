@@ -32,7 +32,7 @@ export function LightnessChart({ tones, toneNames, gridlines }: LightnessChartPr
 			data={data}
 			gridlines={gridlines}
 			showAxisLabels={false}
-			showYAxisValues={false}
+			showYAxisValues={true}
 			xAxisLabel="Tone"
 			yAxisLabel="Lightness"
 			maxDataPoints={toneNames.length}
