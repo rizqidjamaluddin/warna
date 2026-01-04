@@ -90,9 +90,23 @@ export interface OverviewWindow extends BaseWindow {
 }
 
 /**
+ * Lightness comparison window that shows all swatches on one chart
+ */
+export interface LightnessComparisonWindow extends BaseWindow {
+	type: 'lightness-comparison'
+}
+
+/**
+ * Chroma comparison window that shows all swatches on one chart
+ */
+export interface ChromaComparisonWindow extends BaseWindow {
+	type: 'chroma-comparison'
+}
+
+/**
  * Union of all window types
  */
-export type WindowInstance = DebugWindow | OutputWindow | OverviewWindow
+export type WindowInstance = DebugWindow | OutputWindow | OverviewWindow | LightnessComparisonWindow | ChromaComparisonWindow
 
 /**
  * Window configuration

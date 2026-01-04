@@ -24,6 +24,7 @@ interface OverviewWindowProps {
 	onPositionChange: (id: string, x: number, y: number) => void
 	onResize: (id: string, width: number, height: number) => void
 	onUpdateWindow: (id: string, updates: Partial<WindowInstance>) => void
+	onAddWindow?: (window: WindowInstance) => void
 	onClose: (id: string) => void
 	onToggleFullscreen: (id: string, x?: number, y?: number) => void
 }
@@ -45,6 +46,7 @@ export function OverviewWindow({
 	onToggleFullscreen,
 	onBringToFront,
 	onUpdateWindow,
+	onAddWindow,
 }: OverviewWindowProps) {
 	// Only subscribe to the exact data needed
 	const swatches = useSwatchesValue()
@@ -65,6 +67,34 @@ export function OverviewWindow({
 	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
 		: gridlines === 'white' ? 'border-r border-b border-white'
 		: ''
+
+	const handleOpenLightnessComparison = () => {
+		if (!onAddWindow) return
+		onAddWindow({
+			id: `lightness-comparison-${Date.now()}`,
+			type: 'lightness-comparison',
+			title: 'Project Lightness Comparison',
+			x: 100,
+			y: 100,
+			width: 800,
+			height: 600,
+			isFullscreen: false,
+		})
+	}
+
+	const handleOpenChromaComparison = () => {
+		if (!onAddWindow) return
+		onAddWindow({
+			id: `chroma-comparison-${Date.now()}`,
+			type: 'chroma-comparison',
+			title: 'Project Chroma Comparison',
+			x: 120,
+			y: 120,
+			width: 800,
+			height: 600,
+			isFullscreen: false,
+		})
+	}
 
 	const content = (
 		<div className="h-full flex flex-col bg-white dark:bg-gray-900">
@@ -131,14 +161,18 @@ export function OverviewWindow({
 
 					{/* Header cell for lightness chart */}
 					<div
-						className={`sticky top-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-center text-sm font-semibold flex items-center justify-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder}`}
+						className={`sticky top-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-center text-sm font-semibold flex items-center justify-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder} cursor-pointer hover:bg-gray-300/70 dark:hover:bg-gray-600/70 transition-colors`}
+						onClick={handleOpenLightnessComparison}
+						title="Click to open lightness comparison chart"
 					>
 						Lightness
 					</div>
 
 					{/* Header cell for chroma chart */}
 					<div
-						className={`sticky top-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-center text-sm font-semibold flex items-center justify-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder}`}
+						className={`sticky top-0 z-10 bg-gray-200/70 dark:bg-gray-700/70 backdrop-blur px-3 py-2 text-center text-sm font-semibold flex items-center justify-center uppercase text-gray-600 dark:text-gray-400 ${gridlineBorder} cursor-pointer hover:bg-gray-300/70 dark:hover:bg-gray-600/70 transition-colors`}
+						onClick={handleOpenChromaComparison}
+						title="Click to open chroma comparison chart"
 					>
 						Chroma
 					</div>

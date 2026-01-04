@@ -4,6 +4,8 @@ import type { WindowInstance } from '../../types'
 import { DebugWindow } from './DebugWindow'
 import { OutputWindow } from './OutputWindow'
 import { OverviewWindow } from './OverviewWindow'
+import { LightnessComparisonWindow } from './LightnessComparisonWindow'
+import { ChromaComparisonWindow } from './ChromaComparisonWindow'
 import { FullscreenWindowManager } from './FullscreenWindowManager'
 
 interface WindowRendererProps {
@@ -108,6 +110,49 @@ export function WindowRenderer({
 						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
 						menuBarHeight={menuBarHeight}
 						viewOptions={window.viewOptions}
+						onPositionChange={onPositionChange}
+						onResize={onResize}
+						onUpdateWindow={onUpdateWindow}
+						onAddWindow={onAddWindow}
+						onClose={onClose}
+						onToggleFullscreen={onToggleFullscreen}
+						onBringToFront={() => onBringToFront(window.id)}
+					/>
+				)
+			case 'lightness-comparison':
+				return (
+					<LightnessComparisonWindow
+						key={window.id}
+						id={window.id}
+						title={window.title}
+						x={window.x}
+						y={window.y}
+						width={window.width}
+						height={window.height}
+						isFullscreen={isFullscreen}
+						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
+						menuBarHeight={menuBarHeight}
+						onPositionChange={onPositionChange}
+						onResize={onResize}
+						onUpdateWindow={onUpdateWindow}
+						onClose={onClose}
+						onToggleFullscreen={onToggleFullscreen}
+						onBringToFront={() => onBringToFront(window.id)}
+					/>
+				)
+			case 'chroma-comparison':
+				return (
+					<ChromaComparisonWindow
+						key={window.id}
+						id={window.id}
+						title={window.title}
+						x={window.x}
+						y={window.y}
+						width={window.width}
+						height={window.height}
+						isFullscreen={isFullscreen}
+						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
+						menuBarHeight={menuBarHeight}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
 						onUpdateWindow={onUpdateWindow}
