@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useCallback } from 'react'
 import {
 	fullProjectAtom,
@@ -75,7 +75,7 @@ export function useUpdateMetadata() {
 	const fullProject = useAtomValue(fullProjectAtom)
 
 	return useCallback(
-		async (updates: Partial<Pick<typeof metadata, 'name'>>) => {
+		async (updates: Partial<Pick<NonNullable<typeof metadata>, 'name'>>) => {
 			if (!metadata || !fullProject) { return }
 
 			const updatedMetadata = {

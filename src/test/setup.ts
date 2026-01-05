@@ -6,7 +6,7 @@ mockIndexedDB()
 
 // Mock ResizeObserver for all tests
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
 	observe() {
 		// Mock implementation
 	}

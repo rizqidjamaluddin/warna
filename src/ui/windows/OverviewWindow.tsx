@@ -1,5 +1,5 @@
 import { useSwatchesValue, useSwatchNames, useToneNames } from '../../hooks/useProjectAtoms'
-import type { WindowInstance, OverviewWindow as OverviewWindowType } from '../../types'
+import type { WindowInstance } from '../../types'
 import type { VisionType } from '../../atoms/ui'
 import { FloatingWindow } from '../FloatingWindow'
 import { ColorCell } from './overview/ColorCell'

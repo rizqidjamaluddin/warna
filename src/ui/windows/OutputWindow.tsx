@@ -31,7 +31,7 @@ function formatAsCSS(swatches: Swatches): string {
 
 	for (const [swatchName, tones] of Object.entries(swatches)) {
 		for (const [toneName, color] of Object.entries(tones)) {
-			if (color) {
+			if (color && color.h !== undefined) {
 				lines.push(`  --color-${swatchName}-${toneName}: oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(3)});`)
 			}
 		}
@@ -53,7 +53,7 @@ function formatAsTailwind(swatches: Swatches): string {
 		lines.push(`        '${swatchName}': {`)
 
 		for (const [toneName, color] of Object.entries(tones)) {
-			if (color) {
+			if (color && color.h !== undefined) {
 				lines.push(`          '${toneName}': 'oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(3)})',`)
 			}
 		}

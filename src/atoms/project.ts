@@ -73,7 +73,7 @@ export const fullProjectAtom = atom(
 			},
 		}
 	},
-	(get, set, newProject: { metadata: ProjectMetadata; data: { swatches: Swatches; preferences?: ProjectPreferences; windowConfig?: WindowConfig } } | null) => {
+	(_get, set, newProject: { metadata: ProjectMetadata; data: { swatches: Swatches; preferences?: ProjectPreferences; windowConfig?: WindowConfig } } | null) => {
 		if (!newProject) {
 			set(projectMetadataAtom, null)
 			set(swatchesAtom, {})
