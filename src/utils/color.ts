@@ -2,6 +2,8 @@ import {
 	formatHex,
 	rgb,
 	oklch,
+	inGamut,
+	clampChroma,
 	type Oklch,
 	type Rgb
 } from 'culori'
@@ -157,4 +159,45 @@ export function getContrastTextColor(backgroundColor: Oklch): string {
 	const luminance = getRelativeLuminance(backgroundColor)
 	// Use white text for dark colors (luminance < 0.5), black text for light colors
 	return luminance < 0.5 ? '#ffffff' : '#000000'
+}
+
+/**
+ * Convert OKLch to RGB (0-255 range)
+ */
+export function oklchToRgb(color: Oklch): { r: number; g: number; b: number } {
+	const rgbColor = rgb(ensureOklch(color))
+	return {
+		r: Math.round((rgbColor?.r ?? 0) * 255),
+		g: Math.round((rgbColor?.g ?? 0) * 255),
+		b: Math.round((rgbColor?.b ?? 0) * 255),
+	}
+}
+
+/**
+ * Convert RGB (0-255 range) to OKLch
+ */
+export function rgbToOklch(r: number, g: number, b: number): Oklch {
+	const rgbColor: Rgb = {
+		mode: 'rgb',
+		r: r / 255,
+		g: g / 255,
+		b: b / 255,
+	}
+	const oklchColor = oklch(rgbColor)
+	return ensureOklch(oklchColor!)
+}
+
+/**
+ * Check if an OKLch color is within the sRGB gamut
+ */
+export function isInGamut(color: Oklch): boolean {
+	return inGamut('rgb')(ensureOklch(color))
+}
+
+/**
+ * Clamp an OKLch color to the sRGB gamut by reducing chroma
+ */
+export function clampToGamut(color: Oklch): Oklch {
+	const clamped = clampChroma(ensureOklch(color), 'rgb')
+	return ensureOklch(clamped!)
 }

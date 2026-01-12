@@ -22,16 +22,33 @@ export const focusedFullscreenWindowIdAtom = atom(
 	},
 )
 
+// Memoization caches for atom families
+const swatchAtomCache = new Map()
+const colorAtomCache = new Map()
+
 // Helper to get/set individual swatches - returns atom for a specific swatch
 export function swatchAtomFamily(swatchName: string) {
-	return focusAtom(swatchesAtom, (optic) => optic.prop(swatchName))
+	if (!swatchAtomCache.has(swatchName)) {
+		swatchAtomCache.set(
+			swatchName,
+			focusAtom(swatchesAtom, (optic) => optic.prop(swatchName))
+		)
+	}
+	return swatchAtomCache.get(swatchName)
 }
 
 // Helper to get/set a specific color in a swatch
 export function colorAtomFamily(swatchName: string, toneName: string) {
-	return focusAtom(swatchesAtom, (optic) =>
-		optic.prop(swatchName).optional().prop(toneName),
-	)
+	const key = `${swatchName}.${toneName}`
+	if (!colorAtomCache.has(key)) {
+		colorAtomCache.set(
+			key,
+			focusAtom(swatchesAtom, (optic) =>
+				optic.prop(swatchName).optional().prop(toneName),
+			)
+		)
+	}
+	return colorAtomCache.get(key)
 }
 
 // Derived atoms for commonly accessed data

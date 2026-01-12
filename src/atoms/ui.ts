@@ -28,3 +28,9 @@ export const selectedTonesAtom = atom<Set<string>>(new Set<string>())
 
 // Future: Allow selecting individual colors (stored as "swatchName.toneName")
 export const selectedColorsAtom = atom<Set<string>>(new Set<string>())
+
+/**
+ * Track the last edit mode used for each color to prevent feedback loops
+ * Key: "swatchName.toneName", Value: edit mode ('rgb' | 'oklch' | 'hex' | null)
+ */
+export const colorEditModeAtom = atom<Map<string, 'rgb' | 'oklch' | 'hex' | null>>(new Map())
