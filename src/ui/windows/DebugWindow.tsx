@@ -69,7 +69,7 @@ export function DebugWindow({
 	}
 
 	const content = (
-		<div className="space-y-3">
+		<div className={`space-y-3 ${isFullscreen ? 'p-8' : ''}`}>
 			<div>
 				<label className="block text-xs font-medium mb-1">
 					Window Title

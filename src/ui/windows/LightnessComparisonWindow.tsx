@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useSwatchesValue, useSwatchNames, useToneNames } from '../../hooks/useProjectAtoms'
 import { useSelectedSwatchesValue, useToggleSwatchSelection } from '../../hooks/useSelection'
 import type { WindowInstance } from '../../types'
@@ -46,6 +46,36 @@ export function LightnessComparisonWindow({
 	const [hoveredSeries, setHoveredSeries] = useState<string | null>(null)
 	const selectedSwatches = useSelectedSwatchesValue()
 	const toggleSwatchSelection = useToggleSwatchSelection()
+	const chartContainerRef = useRef<HTMLDivElement>(null)
+	const [containerSize, setContainerSize] = useState({ width: width, height: height })
+
+	// Measure container size when in fullscreen or when window resizes
+	useEffect(() => {
+		if (!isFullscreen) {
+			setContainerSize({ width, height })
+			return
+		}
+
+		const updateSize = () => {
+			if (chartContainerRef.current) {
+				const rect = chartContainerRef.current.getBoundingClientRect()
+				setContainerSize({ width: rect.width, height: rect.height })
+			}
+		}
+
+		// Initial measurement
+		updateSize()
+
+		// Update on window resize
+		window.addEventListener('resize', updateSize)
+		// Small delay to ensure layout is complete
+		const timer = setTimeout(updateSize, 0)
+
+		return () => {
+			window.removeEventListener('resize', updateSize)
+			clearTimeout(timer)
+		}
+	}, [isFullscreen, width, height])
 
 	// Prepare data series for the chart
 	const series = swatchNames.map((swatchName) => {
@@ -72,15 +102,22 @@ export function LightnessComparisonWindow({
 		}
 	})
 
+	// Calculate chart dimensions - use full space in fullscreen, centered with padding otherwise
+	const chartPadding = isFullscreen ? 0 : 32 // p-4 on both sides when not fullscreen
+	// In fullscreen, use measured container width (flex-1 already excludes legend)
+	// In windowed mode, subtract legend width from total window width
+	const chartWidth = isFullscreen ? containerSize.width : width - 192
+	const chartHeight = containerSize.height - chartPadding
+
 	const content = (
-		<div className="h-full flex bg-white dark:bg-gray-900">
+		<div className="h-full flex bg-white dark:bg-gray-900 overflow-hidden">
 			{/* Chart */}
-			<div className="flex-1 flex items-center justify-center p-4">
+			<div ref={chartContainerRef} className={`flex-1 flex overflow-hidden ${isFullscreen ? '' : 'items-center justify-center p-4'}`}>
 				<ComparisonChart
 					series={series}
 					labels={toneNames}
-					width={width - 200}
-					height={height}
+					width={chartWidth}
+					height={chartHeight}
 					yMin={0}
 					yMax={1}
 					xAxisLabel="Tone"
@@ -91,7 +128,7 @@ export function LightnessComparisonWindow({
 			</div>
 
 			{/* Vertical scrollable legend */}
-			<div className="w-48 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-y-auto">
+			<div className="w-48 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-y-auto flex-shrink-0">
 				<div className="p-3">
 					{series.map((s) => {
 						const isSelected = selectedSwatches.has(s.name)

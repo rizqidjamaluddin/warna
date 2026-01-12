@@ -154,7 +154,7 @@ export function FullscreenWindowManager({
 			</Reorder.Group>
 
 			{/* Active window content */}
-			<div className={`flex-1 overflow-auto bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 ${activeWindow.type === 'overview' || activeWindow.type === 'output' ? '' : 'p-8'}`}>
+			<div className="flex-1 overflow-auto bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300">
 				{children(activeWindow)}
 			</div>
 		</div>

@@ -189,9 +189,9 @@ export function ComparisonChart({
 
 					let opacity = 1
 					if (hasHover) {
-						opacity = (isHovered || isSelected) ? 1 : 0.2
+						opacity = (isHovered || isSelected) ? 1 : 0.1
 					} else if (hasSelection) {
-						opacity = isSelected ? 1 : 0.2
+						opacity = isSelected ? 1 : 0.1
 					}
 
 					const linePath = s.data

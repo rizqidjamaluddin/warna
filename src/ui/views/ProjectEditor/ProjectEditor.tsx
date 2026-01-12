@@ -1,16 +1,14 @@
-import { Menubar } from 'radix-ui'
 import { useEffect, useRef, useState } from 'react'
 import { useFullProject } from '../../../hooks/useProjectAtoms'
-import { useTheme } from '../../../hooks/useTheme'
 import type { WindowInstance } from '../../../types'
 import { createNewProject, saveProject } from '../../../utils/db'
 import { Input } from '../../Input'
+import { ProjectMenuBar } from '../../MenuBar'
 import { Prompt } from '../../Prompt'
 import { WindowRenderer } from '../../windows/WindowRenderer'
 
 export function ProjectEditor() {
 	const { currentProject, setCurrentProject } = useFullProject()
-	const { theme, setTheme } = useTheme()
 	const [isEditingName, setIsEditingName] = useState(false)
 	const [isCreatingProject, setIsCreatingProject] = useState(false)
 	const [saving, setSaving] = useState(false)
@@ -481,178 +479,15 @@ export function ProjectEditor() {
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
 			{/* Menu bar - always visible */}
-			<div
-				ref={menuBarRef}
-				className="bg-gray-800 dark:bg-gray-950 text-white px-4 py-2 flex items-center justify-between sticky top-0"
-				style={{ zIndex: 100 }}
-			>
-				<div className="flex items-center gap-4">
-					<button
-						onClick={handleCloseProject}
-						className="hover:bg-gray-700 dark:hover:bg-gray-900 px-2 py-1 rounded text-sm transition-colors"
-					>
-						← Back
-					</button>
-					<span className="text-gray-400">|</span>
-					<button
-						onClick={() => setIsEditingName(true)}
-						className="font-semibold hover:text-gray-300 transition-colors"
-					>
-						{currentProject.metadata.name}
-					</button>
-					<span className="text-gray-400">|</span>
-					<Menubar.Root className="flex gap-1">
-						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
-								Project
-							</Menubar.Trigger>
-							<Menubar.Portal>
-								<Menubar.Content
-									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
-									align="start"
-									sideOffset={5}
-								>
-									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
-										onSelect={() => setIsCreatingProject(true)}
-									>
-										New Project...
-									</Menubar.Item>
-									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
-										onSelect={() => setIsEditingName(true)}
-									>
-										Rename Project...
-									</Menubar.Item>
-									<Menubar.Separator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
-									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
-										onSelect={handleCloseProject}
-									>
-										Return to Index
-									</Menubar.Item>
-								</Menubar.Content>
-							</Menubar.Portal>
-						</Menubar.Menu>
-
-						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
-								Edit
-							</Menubar.Trigger>
-							<Menubar.Portal>
-								<Menubar.Content
-									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
-									align="start"
-									sideOffset={5}
-								>
-									{/* Edit menu items will go here */}
-								</Menubar.Content>
-							</Menubar.Portal>
-						</Menubar.Menu>
-
-						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
-								View
-							</Menubar.Trigger>
-							<Menubar.Portal>
-								<Menubar.Content
-									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
-									align="start"
-									sideOffset={5}
-								>
-									<Menubar.RadioGroup value={theme} onValueChange={(value) => setTheme(value as 'light' | 'dark')}>
-										<Menubar.RadioItem
-											value="light"
-											className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-										>
-											<span>Light</span>
-											<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-										</Menubar.RadioItem>
-										<Menubar.RadioItem
-											value="dark"
-											className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 flex items-center justify-between"
-										>
-											<span>Dark</span>
-											<Menubar.ItemIndicator className="ml-2">✓</Menubar.ItemIndicator>
-										</Menubar.RadioItem>
-									</Menubar.RadioGroup>
-
-								</Menubar.Content>
-							</Menubar.Portal>
-						</Menubar.Menu>
-
-						<Menubar.Menu>
-							<Menubar.Trigger className="text-sm px-2 py-1 hover:bg-gray-700 dark:hover:bg-gray-900 rounded cursor-pointer select-none outline-none data-[state=open]:bg-gray-700 dark:data-[state=open]:bg-gray-900">
-								Window
-							</Menubar.Trigger>
-							<Menubar.Portal>
-								<Menubar.Content
-									className="min-w-[220px] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 z-[150]"
-									align="start"
-									sideOffset={5}
-								>
-									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
-										onSelect={() => {
-											const newWindow: WindowInstance = {
-												id: crypto.randomUUID(),
-												type: 'overview',
-												title: 'Overview',
-												x: 100,
-												y: 100,
-												width: 800,
-												height: 600,
-												isFullscreen: false,
-											}
-											handleAddWindow(newWindow)
-										}}
-									>
-										Overview
-									</Menubar.Item>
-									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
-										onSelect={() => {
-											const newWindow: WindowInstance = {
-												id: crypto.randomUUID(),
-												type: 'output',
-												title: 'Output',
-												x: 150,
-												y: 150,
-												width: 500,
-												height: 400,
-												isFullscreen: false,
-											}
-											handleAddWindow(newWindow)
-										}}
-									>
-										Output
-									</Menubar.Item>
-									<Menubar.Item
-										className="text-sm px-3 py-2 rounded cursor-pointer select-none outline-none hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
-										onSelect={() => {
-											const newWindow: WindowInstance = {
-												id: crypto.randomUUID(),
-												type: 'debug',
-												title: 'Debug Window',
-												x: 200,
-												y: 200,
-												width: 300,
-												height: 200,
-												isFullscreen: false,
-											}
-											handleAddWindow(newWindow)
-										}}
-									>
-										Debug
-									</Menubar.Item>
-								</Menubar.Content>
-							</Menubar.Portal>
-						</Menubar.Menu>
-					</Menubar.Root>
-				</div>
-				<div className="text-sm text-gray-400">
-					{new Date(currentProject.metadata.updatedAt).toLocaleString()}
-				</div>
+			<div ref={menuBarRef} style={{ zIndex: 100 }}>
+				<ProjectMenuBar
+					projectName={currentProject.metadata.name}
+					lastUpdated={currentProject.metadata.updatedAt}
+					onRenameProject={() => setIsEditingName(true)}
+					onCreateNewProject={() => setIsCreatingProject(true)}
+					onCloseProject={handleCloseProject}
+					onAddWindow={handleAddWindow}
+				/>
 			</div>
 
 			<main className={`${hasFullscreenWindows ? '' : 'max-w-7xl mx-auto px-4 py-8'} flex-1`}>
