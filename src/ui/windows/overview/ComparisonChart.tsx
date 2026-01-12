@@ -213,17 +213,23 @@ export function ComparisonChart({
 							/>
 
 							{/* Data points */}
-							{s.data.map((d) => (
-								<circle
-									key={d.index}
-									cx={xScale(d.index)}
-									cy={yScale(d.value)}
-									r="4"
-									fill={d.color}
-									stroke="white"
-									strokeWidth="1"
-								/>
-							))}
+							{s.data.map((d) => {
+								const size = 8
+								const cx = xScale(d.index)
+								const cy = yScale(d.value)
+								return (
+									<rect
+										key={d.index}
+										x={cx - size / 2}
+										y={cy - size / 2}
+										width={size}
+										height={size}
+										fill={d.color}
+										stroke="white"
+										strokeWidth="1"
+									/>
+								)
+							})}
 						</g>
 					)
 				})}

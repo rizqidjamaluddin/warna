@@ -81,7 +81,7 @@ export function Chart({
 					y={height / 2}
 					textAnchor="middle"
 					alignmentBaseline="middle"
-					className="fill-gray-500 dark:fill-gray-400"
+					className="fill-gray-600 dark:fill-gray-400"
 					style={{ fontSize: '12px' }}
 				>
 					No data
@@ -146,7 +146,7 @@ export function Chart({
 						y={pos.y}
 						textAnchor="end"
 						alignmentBaseline="middle"
-						className="text-gray-600 dark:text-gray-400"
+						className="fill-gray-600 dark:fill-gray-400"
 						style={{ fontSize: '8px' }}
 					>
 						{pos.label}
@@ -181,18 +181,20 @@ export function Chart({
 					strokeWidth="1.5"
 				/>
 
-				{/* Data points (circles) */}
+				{/* Data points (squares) */}
 				{data.map((d) => {
 					const cx = xScale(d.index)
 					const cy = yScale(d.value)
+					const size = 8
 
 					return (
 						<g key={d.index}>
-							{/* Outer circle */}
-							<circle
-								cx={cx}
-								cy={cy}
-								r="4"
+							{/* Square */}
+							<rect
+								x={cx - size / 2}
+								y={cy - size / 2}
+								width={size}
+								height={size}
 								fill={d.color ?? pointColor}
 								stroke="white"
 								strokeWidth="1"
@@ -207,7 +209,7 @@ export function Chart({
 						x={padding.left + chartWidth / 2}
 						y={height - 2}
 						textAnchor="middle"
-						className="text-gray-600 dark:text-gray-400"
+						className="fill-gray-600 dark:fill-gray-400"
 						style={{ fontSize: '8px' }}
 					>
 						{xAxisLabel}
@@ -220,7 +222,7 @@ export function Chart({
 						x={8}
 						y={padding.top + chartHeight / 2}
 						textAnchor="middle"
-						className="text-gray-600 dark:text-gray-400"
+						className="fill-gray-600 dark:fill-gray-400"
 						style={{ fontSize: '8px' }}
 						transform={`rotate(-90, 8, ${padding.top + chartHeight / 2})`}
 					>
