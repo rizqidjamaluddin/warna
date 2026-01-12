@@ -20,6 +20,7 @@ interface ComparisonChartProps {
 	showAxisLabels?: boolean
 	showGridlines?: boolean
 	hoveredSeries?: string | null
+	selectedSeries?: Set<string>
 }
 
 export function ComparisonChart({
@@ -34,6 +35,7 @@ export function ComparisonChart({
 	showAxisLabels = true,
 	showGridlines = true,
 	hoveredSeries = null,
+	selectedSeries,
 }: ComparisonChartProps) {
 	// Chart dimensions
 	const padding = { top: 40, right: 40, bottom: 60, left: 60 }
@@ -157,19 +159,40 @@ export function ComparisonChart({
 			)}
 
 			{/* Plot lines for each series */}
-			{/* Render non-hovered series first, then hovered series last (for z-index) */}
+			{/* Render non-highlighted series first, then highlighted series last (for z-index) */}
 			{series
 				.sort((a, b) => {
-					if (hoveredSeries === null) return 0
-					if (a.name === hoveredSeries) return 1
-					if (b.name === hoveredSeries) return -1
+					// Priority: hovered > selected > normal
+					const aIsHovered = hoveredSeries === a.name
+					const bIsHovered = hoveredSeries === b.name
+					const aIsSelected = selectedSeries?.has(a.name) ?? false
+					const bIsSelected = selectedSeries?.has(b.name) ?? false
+
+					if (aIsHovered && !bIsHovered) return 1
+					if (!aIsHovered && bIsHovered) return -1
+					if (aIsSelected && !bIsSelected) return 1
+					if (!aIsSelected && bIsSelected) return -1
 					return 0
 				})
 				.map((s) => {
 					if (s.data.length === 0) return null
 
 					const isHovered = hoveredSeries === s.name
-					const isDimmed = hoveredSeries !== null && !isHovered
+					const isSelected = selectedSeries?.has(s.name) ?? false
+
+					// Determine opacity:
+					// - If hovering: highlight hovered AND selected, dim the rest
+					// - Else if selection exists: highlight selected, dim the rest
+					// - Else: all visible
+					const hasHover = hoveredSeries !== null
+					const hasSelection = selectedSeries && selectedSeries.size > 0
+
+					let opacity = 1
+					if (hasHover) {
+						opacity = (isHovered || isSelected) ? 1 : 0.2
+					} else if (hasSelection) {
+						opacity = isSelected ? 1 : 0.2
+					}
 
 					const linePath = s.data
 						.map((d, i) => {
@@ -180,7 +203,7 @@ export function ComparisonChart({
 						.join(' ')
 
 					return (
-						<g key={s.name} opacity={isDimmed ? 0.2 : 1} className="transition-opacity duration-200">
+						<g key={s.name} opacity={opacity} className="transition-opacity duration-200">
 							{/* Line - low contrast */}
 							<path
 								d={linePath}

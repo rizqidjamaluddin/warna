@@ -1,0 +1,70 @@
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useCallback } from 'react'
+import { selectedSwatchesAtom, selectedTonesAtom, selectedColorsAtom } from '../atoms/ui'
+
+/**
+ * Hook for reading and writing the selected swatches
+ */
+export function useSelectedSwatches() {
+	return useAtom(selectedSwatchesAtom)
+}
+
+/**
+ * Hook for reading the selected swatches (read-only)
+ */
+export function useSelectedSwatchesValue() {
+	return useAtomValue(selectedSwatchesAtom)
+}
+
+/**
+ * Hook for toggling a swatch selection
+ */
+export function useToggleSwatchSelection() {
+	const setSelectedSwatches = useSetAtom(selectedSwatchesAtom)
+
+	return useCallback(
+		(swatchName: string) => {
+			setSelectedSwatches((prev: Set<string>) => {
+				const next = new Set(prev)
+				if (next.has(swatchName)) {
+					next.delete(swatchName)
+				} else {
+					next.add(swatchName)
+				}
+				return next
+			})
+		},
+		[setSelectedSwatches],
+	)
+}
+
+/**
+ * Hook for checking if a swatch is selected
+ */
+export function useIsSwatchSelected() {
+	const selectedSwatches = useAtomValue(selectedSwatchesAtom)
+
+	return useCallback(
+		(swatchName: string) => {
+			return selectedSwatches.has(swatchName)
+		},
+		[selectedSwatches],
+	)
+}
+
+/**
+ * Hook for clearing all selections
+ */
+export function useClearSelections() {
+	const setSelectedSwatches = useSetAtom(selectedSwatchesAtom)
+	const setSelectedTones = useSetAtom(selectedTonesAtom)
+	const setSelectedColors = useSetAtom(selectedColorsAtom)
+
+	return useCallback(() => {
+		setSelectedSwatches(new Set())
+		setSelectedTones(new Set())
+		setSelectedColors(new Set())
+	}, [setSelectedSwatches, setSelectedTones, setSelectedColors])
+}
+
+// Future hooks for tones and individual colors can be added here

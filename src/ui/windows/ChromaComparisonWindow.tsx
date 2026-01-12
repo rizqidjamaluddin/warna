@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSwatchesValue, useSwatchNames, useToneNames } from '../../hooks/useProjectAtoms'
+import { useSelectedSwatchesValue, useToggleSwatchSelection } from '../../hooks/useSelection'
 import type { WindowInstance } from '../../types'
 import { FloatingWindow } from '../FloatingWindow'
 import { toHex } from '../../utils/color'
@@ -43,6 +44,8 @@ export function ChromaComparisonWindow({
 	const swatchNames = useSwatchNames()
 	const toneNames = useToneNames()
 	const [hoveredSeries, setHoveredSeries] = useState<string | null>(null)
+	const selectedSwatches = useSelectedSwatchesValue()
+	const toggleSwatchSelection = useToggleSwatchSelection()
 
 	// Calculate global max chroma
 	const maxChroma = Math.max(
@@ -91,28 +94,35 @@ export function ChromaComparisonWindow({
 					xAxisLabel="Tone"
 					yAxisLabel="Chroma"
 					hoveredSeries={hoveredSeries}
+					selectedSeries={selectedSwatches}
 				/>
 			</div>
 
 			{/* Vertical scrollable legend */}
 			<div className="w-48 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 overflow-y-auto">
 				<div className="p-3">
-					{series.map((s) => (
-						<div
-							key={s.name}
-							className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 px-1 py-1 transition-colors"
-							onMouseEnter={() => setHoveredSeries(s.name)}
-							onMouseLeave={() => setHoveredSeries(null)}
-						>
+					{series.map((s) => {
+						const isSelected = selectedSwatches.has(s.name)
+						return (
 							<div
-								className="w-3 h-3 rounded-full flex-shrink-0"
-								style={{ backgroundColor: s.legendColor }}
-							/>
-							<span className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
-								{s.name}
-							</span>
-						</div>
-					))}
+								key={s.name}
+								className={`flex items-center gap-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 px-1 py-1 transition-colors ${
+									isSelected ? 'bg-gray-200 dark:bg-gray-700' : ''
+								}`}
+								onMouseEnter={() => setHoveredSeries(s.name)}
+								onMouseLeave={() => setHoveredSeries(null)}
+								onClick={() => toggleSwatchSelection(s.name)}
+							>
+								<div
+									className="w-3 h-3 rounded-full flex-shrink-0"
+									style={{ backgroundColor: s.legendColor }}
+								/>
+								<span className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase">
+									{s.name}
+								</span>
+							</div>
+						)
+					})}
 				</div>
 			</div>
 		</div>
