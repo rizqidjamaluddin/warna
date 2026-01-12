@@ -118,7 +118,7 @@ export function ProjectEditor() {
 			// Clamp position to keep windows on-screen and below menu bar
 			x: Math.max(0, Math.min(win.x, viewportWidth - clampedWidth)),
 			y: Math.max(menuBarHeight, Math.min(win.y, viewportHeight - clampedHeight)),
-		}
+		} as WindowInstance
 	})
 	const focusedFullscreenWindowId = currentProject.data.windowConfig?.focusedFullscreenWindowId
 
@@ -248,7 +248,7 @@ export function ProjectEditor() {
 	function handleUpdateWindow(id: string, updates: Partial<WindowInstance>) {
 		if (!currentProject) { return }
 
-		const updatedWindows = windows.map((w) => (w.id === id ? { ...w, ...updates } : w))
+		const updatedWindows = windows.map((w) => (w.id === id ? { ...w, ...updates } as WindowInstance : w))
 
 		const updatedProject = {
 			...currentProject,
@@ -378,7 +378,7 @@ export function ProjectEditor() {
 				updates.x = x
 				updates.y = y
 			}
-			updatedWindows = windows.map((w) => w.id === id ? { ...w, ...updates } : w)
+			updatedWindows = windows.map((w) => w.id === id ? { ...w, ...updates } as WindowInstance : w)
 
 			// If un-fullscreening the focused window, focus the next or previous one
 			if (focusedFullscreenWindowId === id) {

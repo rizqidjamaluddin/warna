@@ -6,6 +6,7 @@ import { OutputWindow } from './OutputWindow'
 import { OverviewWindow } from './OverviewWindow'
 import { LightnessComparisonWindow } from './LightnessComparisonWindow'
 import { ChromaComparisonWindow } from './ChromaComparisonWindow'
+import { ColorEditWindow } from './ColorEditWindow'
 import { FullscreenWindowManager } from './FullscreenWindowManager'
 
 interface WindowRendererProps {
@@ -153,6 +154,29 @@ export function WindowRenderer({
 						isFullscreen={isFullscreen}
 						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
 						menuBarHeight={menuBarHeight}
+						onPositionChange={onPositionChange}
+						onResize={onResize}
+						onUpdateWindow={onUpdateWindow}
+						onClose={onClose}
+						onToggleFullscreen={onToggleFullscreen}
+						onBringToFront={() => onBringToFront(window.id)}
+					/>
+				)
+			case 'color-edit':
+				return (
+					<ColorEditWindow
+						key={window.id}
+						id={window.id}
+						title={window.title}
+						x={window.x}
+						y={window.y}
+						width={window.width}
+						height={window.height}
+						isFullscreen={isFullscreen}
+						zIndex={!isFullscreen ? getWindowZIndex(window.id) : undefined}
+						menuBarHeight={menuBarHeight}
+						swatchName={window.swatchName}
+						toneName={window.toneName}
 						onPositionChange={onPositionChange}
 						onResize={onResize}
 						onUpdateWindow={onUpdateWindow}

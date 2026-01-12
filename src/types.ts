@@ -48,7 +48,8 @@ export type Swatches<S extends string = string, T extends string = string> = Rec
  * Project preferences
  */
 export interface ProjectPreferences {
-	// Reserved for future preferences
+	outputFormat?: 'json' | 'css' | 'tailwind-v4' | 'tailwind-v3'
+	overrideDefaultColors?: boolean
 }
 
 /**
@@ -104,9 +105,18 @@ export interface ChromaComparisonWindow extends BaseWindow {
 }
 
 /**
+ * Color edit window for editing a specific color
+ */
+export interface ColorEditWindow extends BaseWindow {
+	type: 'color-edit'
+	swatchName: string
+	toneName: string
+}
+
+/**
  * Union of all window types
  */
-export type WindowInstance = DebugWindow | OutputWindow | OverviewWindow | LightnessComparisonWindow | ChromaComparisonWindow
+export type WindowInstance = DebugWindow | OutputWindow | OverviewWindow | LightnessComparisonWindow | ChromaComparisonWindow | ColorEditWindow
 
 /**
  * Window configuration

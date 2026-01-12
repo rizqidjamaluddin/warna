@@ -197,6 +197,23 @@ export function OverviewWindow({
 									toneName={toneName}
 									gridlines={gridlines}
 									visionType={visionType}
+									onClick={() => {
+										if (onAddWindow) {
+											const newWindow: WindowInstance = {
+												id: crypto.randomUUID(),
+												type: 'color-edit' as const,
+												title: `Edit ${swatchName}.${toneName}`,
+												x: 150,
+												y: 150,
+												width: 400,
+												height: 500,
+												isFullscreen: false,
+												swatchName: swatchName,
+												toneName: toneName,
+											}
+											onAddWindow(newWindow)
+										}
+									}}
 								/>
 							))}
 

@@ -8,9 +8,10 @@ interface ColorCellProps {
 	toneName: string
 	gridlines: 'black' | 'white' | 'none'
 	visionType: VisionType
+	onClick?: () => void
 }
 
-export function ColorCell({ color, swatchName, toneName, gridlines, visionType }: ColorCellProps) {
+export function ColorCell({ color, swatchName, toneName, gridlines, visionType, onClick }: ColorCellProps) {
 	const gridlineBorder = gridlines === 'black' ? 'border-r border-b border-black'
 		: gridlines === 'white' ? 'border-r border-b border-white'
 		: ''
@@ -31,9 +32,10 @@ export function ColorCell({ color, swatchName, toneName, gridlines, visionType }
 
 	return (
 		<div
-			className={`p-2 min-h-[60px] flex items-center justify-center text-xs font-medium ${gridlineBorder}`}
+			className={`p-2 min-h-[60px] flex items-center justify-center text-xs font-medium ${gridlineBorder} ${onClick ? 'cursor-pointer' : ''}`}
 			style={{ backgroundColor, color: textColor }}
 			title={`${swatchName}-${toneName}`}
+			onClick={onClick}
 		>
 			{colorName}
 		</div>
